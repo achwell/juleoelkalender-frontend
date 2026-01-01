@@ -28,6 +28,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate'
 }
 const config: UserConfig | { test: { global: boolean, environment: BuiltinEnvironment } } = {
+  base: '/juleoelkalender-frontend/',
   build: {
     sourcemap: process.env.SOURCE_MAP === 'true',
     rollupOptions: {
