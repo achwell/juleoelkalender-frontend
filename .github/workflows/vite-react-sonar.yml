@@ -1,8 +1,10 @@
-name: Build and Deploy
+name: Build Vite React & Sonar Analysis
 
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    types: [ opened, synchronize, reopened ]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +13,7 @@ permissions:
   id-token: write
 
 jobs:
-  build-deploy:
+  build-and-sonar:
     runs-on: ubuntu-latest
     steps:
 
@@ -30,14 +32,8 @@ jobs:
       - name: Build production
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: './dist'
-
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
