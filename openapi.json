@@ -1,0 +1,1649 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Juleølkalender",
+        "description": "Juleølkalender",
+        "contact": { "name": "Axel Wulff Sæther", "url": "https://juleoelkalender.no", "email": "axelwulff@mac.com" },
+        "license": { "name": "Apache 2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0" },
+        "version": "1.0.0"
+    },
+    "servers": [{ "url": "http://localhost:8080", "description": "Generated server url" }],
+    "security": [{ "bearerAuth": [] }],
+    "paths": {
+        "/api/v1/user/{id}": {
+            "get": {
+                "tags": ["user-controller"],
+                "operationId": "getUserById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "Hent en bruker basert på id",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/User" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["user-controller"],
+                "operationId": "updateUser",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } },
+                    "required": true
+                },
+                "responses": {
+                    "default": {
+                        "description": "Oppdater bruker",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/User" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["user-controller"],
+                "operationId": "deleteUser",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "Slett bruker",
+                        "content": { "*/*": { "schema": { "type": "boolean" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/review/{id}": {
+            "get": {
+                "tags": ["review-controller"],
+                "operationId": "getReviewById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Review" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["review-controller"],
+                "operationId": "updateReview",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Review" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Review" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["review-controller"],
+                "operationId": "deleteReview",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/passwordchange/{id}": {
+            "get": {
+                "tags": ["password-change-controller"],
+                "operationId": "getPasswordChangeRequestById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["password-change-controller"],
+                "operationId": "updatePasswordChangeRequest",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["password-change-controller"],
+                "operationId": "deletePasswordChangeRequest",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/passwordchange/{email}/{password}": {
+            "put": {
+                "tags": ["password-change-controller"],
+                "operationId": "updatePassword",
+                "parameters": [
+                    { "name": "email", "in": "path", "required": true, "schema": { "type": "string" } },
+                    { "name": "password", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/User" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/calendar/{id}": {
+            "get": {
+                "tags": ["calendar-controller"],
+                "operationId": "getCalendarById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["calendar-controller"],
+                "operationId": "updateCalendar",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Calendar" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["calendar-controller"],
+                "operationId": "deleteCalendar",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/beerstyle/{id}": {
+            "get": {
+                "tags": ["beer-style-controller"],
+                "operationId": "getBeerStyleById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/BeerStyle" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["beer-style-controller"],
+                "operationId": "updateBeerStyle",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BeerStyle" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/BeerStyle" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["beer-style-controller"],
+                "operationId": "deleteBeerStyle",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/beercalendar/{id}": {
+            "get": {
+                "tags": ["beer-calendar-controller"],
+                "operationId": "getBeerCalendarById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/BeerCalendar" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["beer-calendar-controller"],
+                "operationId": "updateBeerCalendar",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BeerCalendar" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/BeerCalendar" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["beer-calendar-controller"],
+                "operationId": "deleteBeerCalendar",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/beer/{id}": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getBeerById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Beer" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["beer-controller"],
+                "operationId": "updateBeer",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Beer" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Beer" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["beer-controller"],
+                "operationId": "deleteBeer",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/admin/calendartoken/{id}": {
+            "get": {
+                "tags": ["calendar-token-controller"],
+                "operationId": "getCalendarTokenById",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CalendarToken" } } }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["calendar-token-controller"],
+                "operationId": "updateCalendarToken",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalendarToken" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CalendarToken" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["calendar-token-controller"],
+                "operationId": "deleteCalendarToken",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/locales/{locale}/missing.json": {
+            "post": {
+                "tags": ["locales-controller"],
+                "operationId": "addMissing",
+                "parameters": [{ "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "type": "object", "additionalProperties": { "type": "string" } }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": { "200": { "description": "OK" } }
+            }
+        },
+        "/api/v1/user": {
+            "get": {
+                "tags": ["user-controller"],
+                "operationId": "getUsers",
+                "responses": {
+                    "default": {
+                        "description": "Hent alle brukere",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/User" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["user-controller"],
+                "operationId": "createUser",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } },
+                    "required": true
+                },
+                "responses": {
+                    "default": {
+                        "description": "Opprett bruker",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/User" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/review": {
+            "get": {
+                "tags": ["review-controller"],
+                "operationId": "getReviews",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/ReviewWithUser" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["review-controller"],
+                "operationId": "createReview",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Review" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Review" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/passwordchange": {
+            "get": {
+                "tags": ["password-change-controller"],
+                "operationId": "getPasswordChangeRequests",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/PasswordChangeRequest" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["password-change-controller"],
+                "operationId": "createPasswordChangeRequest",
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/log/{logLevel}": {
+            "post": {
+                "tags": ["log-controller"],
+                "operationId": "log",
+                "parameters": [{ "name": "logLevel", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "type": "string" } } },
+                    "required": true
+                },
+                "responses": { "200": { "description": "OK" } }
+            }
+        },
+        "/api/v1/log/logDevice": {
+            "post": {
+                "tags": ["log-controller"],
+                "operationId": "logDevice",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Device" } } },
+                    "required": true
+                },
+                "responses": { "200": { "description": "OK" } }
+            }
+        },
+        "/api/v1/calendar": {
+            "get": {
+                "tags": ["calendar-controller"],
+                "operationId": "getCalendars",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/Calendar" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["calendar-controller"],
+                "operationId": "createCalendar",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Calendar" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/beerstyle": {
+            "get": {
+                "tags": ["beer-style-controller"],
+                "operationId": "getBeerStyles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerStyle" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["beer-style-controller"],
+                "operationId": "createBeerStyle",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BeerStyle" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/BeerStyle" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/beercalendar": {
+            "get": {
+                "tags": ["beer-calendar-controller"],
+                "operationId": "getBeerCalendars",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerCalendar" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["beer-calendar-controller"],
+                "operationId": "createBeerCalendar",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BeerCalendar" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/BeerCalendar" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/beercalendar/move/{calendarId}/{day}/{direction}": {
+            "post": {
+                "tags": ["beer-calendar-controller"],
+                "operationId": "moveBeerCalendar",
+                "parameters": [
+                    {
+                        "name": "calendarId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    },
+                    {
+                        "name": "day",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "enum": ["UP", "DOWN"] }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            }
+        },
+        "/api/v1/beer": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getBeers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/Beer" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["beer-controller"],
+                "operationId": "createBeer",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Beer" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Beer" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/register": {
+            "post": {
+                "tags": ["auth-controller"],
+                "operationId": "register",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthenticationResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/googleauthenticate": {
+            "post": {
+                "tags": ["auth-controller"],
+                "operationId": "loginWithGoogle",
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/GoogleAuthenticationRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthenticationResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/facebookauthenticate": {
+            "post": {
+                "tags": ["auth-controller"],
+                "operationId": "loginWithFacebook",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/FacebookAuthenticationRequest" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthenticationResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/authenticate": {
+            "post": {
+                "tags": ["auth-controller"],
+                "operationId": "authenticate",
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/AuthenticationRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthenticationResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/addtoken": {
+            "post": {
+                "tags": ["auth-controller"],
+                "operationId": "addtoken",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddTokenRequest" } } },
+                    "required": true
+                },
+                "responses": { "200": { "description": "OK" } }
+            }
+        },
+        "/api/v1/admin/calendartoken": {
+            "get": {
+                "tags": ["calendar-token-controller"],
+                "operationId": "getCalendarTokens",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/CalendarToken" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["calendar-token-controller"],
+                "operationId": "createCalendarToken",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalendarToken" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CalendarToken" } } }
+                    }
+                }
+            }
+        },
+        "/locales/{locale}/translation.json": {
+            "get": {
+                "tags": ["locales-controller"],
+                "operationId": "getLocale",
+                "parameters": [{ "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "string" } } } }
+                }
+            }
+        },
+        "/api/v1/user/export/{locale}": {
+            "get": {
+                "tags": ["user-controller"],
+                "operationId": "getAllUsersExport",
+                "parameters": [{ "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "default": {
+                        "description": "Eksporter alle brukere til Excel",
+                        "content": { "*/*": { "schema": { "type": "string", "format": "byte" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/email/{email}": {
+            "get": {
+                "tags": ["user-controller"],
+                "operationId": "getUserByEmail",
+                "parameters": [{ "name": "email", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "default": {
+                        "description": "Hent alle brukere basert på e-post",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/UserDetails" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/review/reviewdata/{id}": {
+            "get": {
+                "tags": ["review-controller"],
+                "operationId": "getReviewDataByBeerId",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/ReviewData" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/review/export/{locale}": {
+            "get": {
+                "tags": ["review-controller"],
+                "operationId": "getAllReviewsExport",
+                "parameters": [{ "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "type": "string", "format": "byte" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/review/bycalendarbeerandreviewer/{calendarId}/{beerId}/{reviewerId}": {
+            "get": {
+                "tags": ["review-controller"],
+                "operationId": "getReviewByCalendarBeerAndReviewer",
+                "parameters": [
+                    {
+                        "name": "calendarId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    },
+                    {
+                        "name": "beerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    },
+                    {
+                        "name": "reviewerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Review" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/devices": {
+            "get": {
+                "tags": ["dashboad-controller"],
+                "operationId": "getDevices",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/Device" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/dashboarddata": {
+            "get": {
+                "tags": ["dashboad-controller"],
+                "operationId": "getDashboardData",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/DashboardData" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/calendar/beer/{calendarId}": {
+            "get": {
+                "tags": ["calendar-controller"],
+                "operationId": "getCalendarWithBeers",
+                "parameters": [
+                    {
+                        "name": "calendarId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/CalendarWithBeer" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/today": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getTodaysBeersWithCalendarAndReview",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerWithCalendarDayAndReview" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/review/{calendarId}": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getBeersWithReviewByCalendar",
+                "parameters": [
+                    {
+                        "name": "calendarId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerWithCalendarDayAndReview" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/review/{calendarId}/{userId}": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getBeersWithReviewByCalendarAndUser",
+                "parameters": [
+                    {
+                        "name": "calendarId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerWithCalendarDayAndReview" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/calendar": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getBeersWithCalendar",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerWithCalendarAndDay" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/calendar/{calendarId}": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getBeersWithCalendarByCalendar",
+                "parameters": [
+                    {
+                        "name": "calendarId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerWithCalendarAndDay" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/allcalendarexport/{locale}": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getAllBeersWithCalendarExport",
+                "parameters": [{ "name": "locale", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "type": "string", "format": "byte" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/beer/allcalendar": {
+            "get": {
+                "tags": ["beer-controller"],
+                "operationId": "getAllBeersWithCalendar",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/BeerWithCalendarAndDay" },
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/userExist/{email}": {
+            "get": {
+                "tags": ["auth-controller"],
+                "operationId": "userExist",
+                "parameters": [{ "name": "email", "in": "path", "required": true, "schema": { "type": "string" } }],
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "boolean" } } } }
+                }
+            }
+        },
+        "/api/v1/auth/refresh": {
+            "get": {
+                "tags": ["auth-controller"],
+                "operationId": "refresh",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthenticationResponse" } } }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Authority": {
+                "type": "object",
+                "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" } },
+                "required": ["id", "name"]
+            },
+            "Beer": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "style": { "type": "string" },
+                    "description": { "type": "string" },
+                    "abv": { "type": "number", "format": "double" },
+                    "ibu": { "type": "number", "format": "double" },
+                    "ebc": { "type": "number", "format": "double" },
+                    "recipe": { "type": "string" },
+                    "untapped": { "type": "string" },
+                    "brewedDate": { "type": "string", "format": "date-time" },
+                    "bottleDate": { "type": "string", "format": "date-time" },
+                    "archived": { "type": "boolean" },
+                    "brewer": { "$ref": "#/components/schemas/UserWithoutChildren" },
+                    "reviews": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ReviewWithoutChildren" },
+                        "uniqueItems": true
+                    },
+                    "createdDate": { "type": "string", "format": "date-time" },
+                    "desiredDate": { "type": "integer", "format": "int32" }
+                },
+                "required": [
+                    "abv",
+                    "archived",
+                    "bottleDate",
+                    "brewedDate",
+                    "brewer",
+                    "createdDate",
+                    "ebc",
+                    "ibu",
+                    "id",
+                    "name",
+                    "reviews",
+                    "style"
+                ]
+            },
+            "CalendarToken": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "token": { "type": "string" },
+                    "name": { "type": "string" },
+                    "active": { "type": "boolean" }
+                },
+                "required": ["active", "id", "name", "token"]
+            },
+            "ReviewWithoutChildren": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "ratingLabel": { "type": "number", "format": "double" },
+                    "ratingLooks": { "type": "number", "format": "double" },
+                    "ratingSmell": { "type": "number", "format": "double" },
+                    "ratingTaste": { "type": "number", "format": "double" },
+                    "ratingFeel": { "type": "number", "format": "double" },
+                    "ratingOverall": { "type": "number", "format": "double" },
+                    "comment": { "type": "string" },
+                    "createdAt": { "type": "string", "format": "date-time" }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "ratingFeel",
+                    "ratingLabel",
+                    "ratingLooks",
+                    "ratingOverall",
+                    "ratingSmell",
+                    "ratingTaste"
+                ]
+            },
+            "Role": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string", "enum": ["ROLE_USER", "ROLE_ADMIN", "ROLE_MASTER"] },
+                    "authorities": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Authority" },
+                        "uniqueItems": true
+                    },
+                    "authority": { "type": "string" }
+                },
+                "required": ["authorities", "authority", "id", "name"]
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "firstName": { "type": "string" },
+                    "middleName": { "type": "string" },
+                    "lastName": { "type": "string" },
+                    "email": { "type": "string" },
+                    "area": { "type": "string" },
+                    "role": { "$ref": "#/components/schemas/Role" },
+                    "locked": { "type": "boolean" },
+                    "beers": { "type": "array", "items": { "$ref": "#/components/schemas/Beer" }, "uniqueItems": true },
+                    "calendarToken": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/CalendarToken" },
+                        "uniqueItems": true
+                    },
+                    "lastLoginDate": { "type": "string", "format": "date-time" },
+                    "createdDate": { "type": "string", "format": "date-time" },
+                    "facebookUserId": { "type": "string" },
+                    "imageUrl": { "type": "string" },
+                    "imageHeight": { "type": "integer", "format": "int32" },
+                    "imageWidth": { "type": "integer", "format": "int32" },
+                    "imageSilhouette": { "type": "boolean" },
+                    "password": { "type": "string" },
+                    "accountNonLocked": { "type": "boolean" },
+                    "accountNonExpired": { "type": "boolean" },
+                    "credentialsNonExpired": { "type": "boolean" },
+                    "enabled": { "type": "boolean" }
+                },
+                "required": [
+                    "beers",
+                    "calendarToken",
+                    "createdDate",
+                    "email",
+                    "firstName",
+                    "imageSilhouette",
+                    "lastName",
+                    "locked",
+                    "password",
+                    "role"
+                ]
+            },
+            "UserWithoutChildren": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "firstName": { "type": "string" },
+                    "middleName": { "type": "string" },
+                    "lastName": { "type": "string" },
+                    "email": { "type": "string" },
+                    "password": { "type": "string" },
+                    "area": { "type": "string" },
+                    "role": { "$ref": "#/components/schemas/Role" },
+                    "locked": { "type": "boolean" },
+                    "calendarToken": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/CalendarToken" },
+                        "uniqueItems": true
+                    },
+                    "lastLoginDate": { "type": "string", "format": "date-time" },
+                    "createdDate": { "type": "string", "format": "date-time" },
+                    "facebookUserId": { "type": "string" },
+                    "imageUrl": { "type": "string" },
+                    "imageHeight": { "type": "integer", "format": "int32" },
+                    "imageWidth": { "type": "integer", "format": "int32" },
+                    "imageSilhouette": { "type": "boolean" }
+                },
+                "required": [
+                    "calendarToken",
+                    "createdDate",
+                    "email",
+                    "firstName",
+                    "imageSilhouette",
+                    "lastName",
+                    "locked",
+                    "password",
+                    "role"
+                ]
+            },
+            "BeerCalendar": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "day": { "type": "integer", "format": "int32" },
+                    "beer": { "$ref": "#/components/schemas/Beer" },
+                    "calendar": { "$ref": "#/components/schemas/Calendar" }
+                },
+                "required": ["beer", "calendar", "day", "id"]
+            },
+            "Calendar": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "year": { "type": "integer", "format": "int32" },
+                    "published": { "type": "boolean" },
+                    "archived": { "type": "boolean" },
+                    "beerCalendars": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/BeerCalendar" },
+                        "uniqueItems": true
+                    },
+                    "calendarToken": { "$ref": "#/components/schemas/CalendarToken" }
+                },
+                "required": ["archived", "beerCalendars", "calendarToken", "name", "published", "year"]
+            },
+            "Review": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "ratingLabel": { "type": "number", "format": "double" },
+                    "ratingLooks": { "type": "number", "format": "double" },
+                    "ratingSmell": { "type": "number", "format": "double" },
+                    "ratingTaste": { "type": "number", "format": "double" },
+                    "ratingFeel": { "type": "number", "format": "double" },
+                    "ratingOverall": { "type": "number", "format": "double" },
+                    "comment": { "type": "string" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "beer": { "$ref": "#/components/schemas/Beer" },
+                    "calendar": { "$ref": "#/components/schemas/Calendar" },
+                    "user": { "$ref": "#/components/schemas/UserWithoutChildren" }
+                },
+                "required": [
+                    "beer",
+                    "calendar",
+                    "createdAt",
+                    "ratingFeel",
+                    "ratingLabel",
+                    "ratingLooks",
+                    "ratingOverall",
+                    "ratingSmell",
+                    "ratingTaste",
+                    "user"
+                ]
+            },
+            "PasswordChangeRequest": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "token": { "type": "string" },
+                    "email": { "type": "string" },
+                    "created": { "type": "string", "format": "date-time" }
+                },
+                "required": ["created", "email", "id", "token"]
+            },
+            "BeerStyle": {
+                "type": "object",
+                "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" } },
+                "required": ["name"]
+            },
+            "Device": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "mobileVendor": { "type": "string" },
+                    "mobileModel": { "type": "string" },
+                    "isMobile": { "type": "boolean" },
+                    "osName": { "type": "string" },
+                    "osVersion": { "type": "string" },
+                    "browserName": { "type": "string" },
+                    "browserVersion": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/UserWithoutChildren" }
+                },
+                "required": [
+                    "browserName",
+                    "browserVersion",
+                    "id",
+                    "isMobile",
+                    "mobileModel",
+                    "mobileVendor",
+                    "osName",
+                    "osVersion",
+                    "user"
+                ]
+            },
+            "RegisterRequest": {
+                "type": "object",
+                "properties": {
+                    "calendarToken": { "type": "string" },
+                    "firstName": { "type": "string" },
+                    "middleName": { "type": "string" },
+                    "lastName": { "type": "string" },
+                    "email": { "type": "string" },
+                    "password": { "type": "string" },
+                    "area": { "type": "string" }
+                },
+                "required": ["calendarToken", "email", "firstName", "lastName", "password"]
+            },
+            "AuthenticationResponse": {
+                "type": "object",
+                "properties": {
+                    "token": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/User" },
+                    "message": { "type": "string" }
+                }
+            },
+            "GoogleAuthenticationRequest": {
+                "type": "object",
+                "properties": {
+                    "credential": { "type": "string" },
+                    "email": { "type": "string" },
+                    "familyName": { "type": "string" },
+                    "givenName": { "type": "string" },
+                    "picture": { "type": "string" }
+                },
+                "required": ["credential", "email", "familyName", "givenName"]
+            },
+            "FacebookAuthenticationRequest": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "firstName": { "type": "string" },
+                    "middleName": { "type": "string" },
+                    "lastName": { "type": "string" },
+                    "email": { "type": "string" },
+                    "picture": { "$ref": "#/components/schemas/FacebookPicture" }
+                },
+                "required": ["email", "firstName", "id", "lastName"]
+            },
+            "FacebookPicture": {
+                "type": "object",
+                "properties": { "data": { "$ref": "#/components/schemas/FacebookPictureData" } }
+            },
+            "FacebookPictureData": {
+                "type": "object",
+                "properties": {
+                    "url": { "type": "string" },
+                    "height": { "type": "integer", "format": "int32" },
+                    "width": { "type": "integer", "format": "int32" },
+                    "isSilhouette": { "type": "boolean" },
+                    "silhouette": { "type": "boolean", "writeOnly": true }
+                },
+                "required": ["height", "isSilhouette", "url", "width"]
+            },
+            "AuthenticationRequest": {
+                "type": "object",
+                "properties": { "email": { "type": "string" }, "password": { "type": "string" } },
+                "required": ["email", "password"]
+            },
+            "AddTokenRequest": {
+                "type": "object",
+                "properties": { "email": { "type": "string" }, "token": { "type": "string" } },
+                "required": ["email", "token"]
+            },
+            "GrantedAuthority": { "type": "object", "properties": { "authority": { "type": "string" } } },
+            "UserDetails": {
+                "type": "object",
+                "properties": {
+                    "accountNonLocked": { "type": "boolean" },
+                    "authorities": { "type": "array", "items": { "$ref": "#/components/schemas/GrantedAuthority" } },
+                    "username": { "type": "string" },
+                    "password": { "type": "string" },
+                    "accountNonExpired": { "type": "boolean" },
+                    "credentialsNonExpired": { "type": "boolean" },
+                    "enabled": { "type": "boolean" }
+                }
+            },
+            "ReviewWithUser": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "ratingLabel": { "type": "number", "format": "double" },
+                    "ratingLooks": { "type": "number", "format": "double" },
+                    "ratingSmell": { "type": "number", "format": "double" },
+                    "ratingTaste": { "type": "number", "format": "double" },
+                    "ratingFeel": { "type": "number", "format": "double" },
+                    "ratingOverall": { "type": "number", "format": "double" },
+                    "comment": { "type": "string" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "beer": { "$ref": "#/components/schemas/Beer" },
+                    "calendar": { "$ref": "#/components/schemas/Calendar" },
+                    "user": { "$ref": "#/components/schemas/UserWithoutChildren" },
+                    "total": { "type": "number", "format": "double" }
+                },
+                "required": [
+                    "beer",
+                    "calendar",
+                    "createdAt",
+                    "id",
+                    "ratingFeel",
+                    "ratingLabel",
+                    "ratingLooks",
+                    "ratingOverall",
+                    "ratingSmell",
+                    "ratingTaste",
+                    "total",
+                    "user"
+                ]
+            },
+            "ReviewData": {
+                "type": "object",
+                "properties": {
+                    "reviews": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Review" },
+                        "uniqueItems": true
+                    },
+                    "calendar": { "$ref": "#/components/schemas/Calendar" },
+                    "average": { "$ref": "#/components/schemas/Review" }
+                },
+                "required": ["average", "calendar", "reviews"]
+            },
+            "DashboardData": {
+                "type": "object",
+                "properties": {
+                    "backendVersion": { "type": "string" },
+                    "backendBuildTime": { "type": "string", "format": "date-time" },
+                    "cpuLoad": { "type": "number", "format": "double" },
+                    "freeDiskSpace": { "type": "integer", "format": "int64" },
+                    "diskUsage": { "type": "integer", "format": "int64" },
+                    "freeMemory": { "type": "number", "format": "double" },
+                    "processUptime": { "type": "number", "format": "double" },
+                    "devices": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Device" },
+                        "uniqueItems": true
+                    },
+                    "dbStatus": { "type": "string" },
+                    "emailStatus": { "type": "string" },
+                    "backendStatus": { "type": "string" },
+                    "numberOfUsers": { "type": "integer", "format": "int32" },
+                    "newestUser": { "$ref": "#/components/schemas/UserWithoutChildren" },
+                    "numberOfActiveUsers": { "type": "integer", "format": "int32" },
+                    "newestActiveUser": { "$ref": "#/components/schemas/UserWithoutChildren" },
+                    "numberOfBeers": { "type": "integer", "format": "int32" },
+                    "numberOfBeersToPlace": { "type": "integer", "format": "int32" },
+                    "numberOfVacantCalendarDays": { "type": "integer", "format": "int32" },
+                    "newestBeer": { "$ref": "#/components/schemas/Beer" }
+                },
+                "required": [
+                    "backendBuildTime",
+                    "backendStatus",
+                    "backendVersion",
+                    "cpuLoad",
+                    "dbStatus",
+                    "devices",
+                    "diskUsage",
+                    "emailStatus",
+                    "freeDiskSpace",
+                    "freeMemory",
+                    "newestActiveUser",
+                    "newestUser",
+                    "numberOfActiveUsers",
+                    "numberOfBeers",
+                    "numberOfBeersToPlace",
+                    "numberOfUsers",
+                    "numberOfVacantCalendarDays",
+                    "processUptime"
+                ]
+            },
+            "CalendarWithBeer": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "year": { "type": "integer", "format": "int32" },
+                    "published": { "type": "boolean" },
+                    "archived": { "type": "boolean" },
+                    "beerCalendars": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/BeerCalendar" },
+                        "uniqueItems": true
+                    },
+                    "calendarToken": { "$ref": "#/components/schemas/CalendarToken" },
+                    "beer": { "$ref": "#/components/schemas/Beer" },
+                    "day": { "type": "integer", "format": "int32" }
+                },
+                "required": [
+                    "archived",
+                    "beer",
+                    "beerCalendars",
+                    "calendarToken",
+                    "day",
+                    "id",
+                    "name",
+                    "published",
+                    "year"
+                ]
+            },
+            "BeerWithCalendarDayAndReview": {
+                "type": "object",
+                "properties": {
+                    "beer": { "$ref": "#/components/schemas/Beer" },
+                    "calendar": { "$ref": "#/components/schemas/Calendar" },
+                    "brewer": { "$ref": "#/components/schemas/UserWithoutChildren" },
+                    "day": { "type": "integer", "format": "int32" },
+                    "review": { "$ref": "#/components/schemas/Review" }
+                },
+                "required": ["beer", "brewer", "calendar", "day"]
+            },
+            "BeerWithCalendarAndDay": {
+                "type": "object",
+                "properties": {
+                    "beer": { "$ref": "#/components/schemas/Beer" },
+                    "calendar": { "$ref": "#/components/schemas/Calendar" },
+                    "brewer": { "$ref": "#/components/schemas/UserWithoutChildren" },
+                    "day": { "type": "integer", "format": "int32" }
+                },
+                "required": ["beer", "brewer", "day"]
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "JWT auth description",
+                "in": "header",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

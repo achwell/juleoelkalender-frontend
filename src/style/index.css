@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "react-day-picker/dist/style.css";
+@import "./_table.css";
+@theme {
+    --breakpoint-*: initial;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 250px;
+    --breakpoint-md: 520px;
+    --breakpoint-lg: 650px;
+    --breakpoint-xl: 975px;
+
+    --color-brand-default: #556cd6;
+    --color-brand-secondary: #19857b;
+    --color-brand-error: #ff0000;
+}
+@theme extend {
+    --animation-fadeIn: fadeIn 0.5s ease-in forwards;
+    --keyframes-fadeIn-0: {
+        opacity: 0;
+    };
+    --keyframes-fadeIn-100: {
+        opacity: 1;
+    };
+}
