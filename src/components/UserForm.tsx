@@ -22,7 +22,6 @@ import { toast } from "react-toastify";
 
 interface Props {
     user: User;
-    loggedInUser: User;
     saveCallback?: (user: User) => void;
     cancelCallback?: () => void;
     from: string;
@@ -46,7 +45,7 @@ interface UserInput {
 }
 
 const ikkebyttpassord = "IKKEBYTTPASSORD";
-const UserForm: FC<Props> = ({ user, loggedInUser, saveCallback, cancelCallback, from }) => {
+const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -205,7 +204,7 @@ const UserForm: FC<Props> = ({ user, loggedInUser, saveCallback, cancelCallback,
                         <InputText name="middleName" label={t("pages.user.middleName")} />
                         <InputText name="lastName" label={t("pages.user.lastName")} required={true} />
                         <InputEmail name="email" label={t("pages.user.email")} required={true} />
-                        {hasAuthority(loggedInUser, "user:create") && loggedInUser.id !== user.id ? (
+                        {hasAuthority(currentUser, "user:create") && currentUser.id !== user.id ? (
                             <>
                                 <InputSelect
                                     name="roleName"
@@ -230,7 +229,7 @@ const UserForm: FC<Props> = ({ user, loggedInUser, saveCallback, cancelCallback,
                                 />
                             </div>
                         )}
-                        {isUserSystemAdmin(loggedInUser) && loggedInUser.id !== user.id && tokens.length > 1 ? (
+                        {isUserSystemAdmin(currentUser) && currentUser.id !== user.id && tokens.length > 1 ? (
                             <InputSelect
                                 name="token"
                                 selectItems={tokens}
