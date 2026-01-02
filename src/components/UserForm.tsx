@@ -204,7 +204,7 @@ const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
                         <InputText name="middleName" label={t("pages.user.middleName")} />
                         <InputText name="lastName" label={t("pages.user.lastName")} required={true} />
                         <InputEmail name="email" label={t("pages.user.email")} required={true} />
-                        {hasAuthority(currentUser, "user:create") && currentUser.id !== user.id ? (
+                        {hasAuthority(currentUser, "user:create") && currentUser?.id !== user.id ? (
                             <>
                                 <InputSelect
                                     name="roleName"
@@ -229,7 +229,7 @@ const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
                                 />
                             </div>
                         )}
-                        {isUserSystemAdmin(currentUser) && currentUser.id !== user.id && tokens.length > 1 ? (
+                        {isUserSystemAdmin(currentUser) && currentUser?.id !== user.id && tokens.length > 1 ? (
                             <InputSelect
                                 name="token"
                                 selectItems={tokens}

@@ -38,14 +38,7 @@ const UserPage = () => {
                 tabs={[
                     {
                         label: t("pages.user.tab.userdata"),
-                        children: (
-                            <UserForm
-                                user={currentUser}
-                                loggedInUser={currentUser}
-                                saveCallback={saveCallback}
-                                from="/user"
-                            />
-                        ),
+                        children: <UserForm user={currentUser} saveCallback={saveCallback} from="/user" />,
                     },
                     {
                         label: t("pages.user.tab.mybeers"),
