@@ -63,13 +63,12 @@ const EditUserPage = () => {
         navigate("/admin/users");
     };
 
-    if (!currentUser || !user || isFetching) return <FullScreenLoader />;
+    if (!user || isFetching) return <FullScreenLoader />;
 
     return (
         <>
             <UserForm
                 user={user}
-                loggedInUser={currentUser}
                 saveCallback={save}
                 from="/admin/users"
                 cancelCallback={async () => navigate("/admin/users")}
