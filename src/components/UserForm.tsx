@@ -267,13 +267,13 @@ const UserForm: FC<Props> = ({ user, loggedInUser, saveCallback, cancelCallback,
                             toggleShowPassword={() => setValue("showPassword", !showPassword)}
                         />
                     </div>
-                    {currentUser?.imageUrl && (
+                    {user?.imageUrl && (
                         <div className="flex flex-row justify-start items-start">
                             <img
-                                src={currentUser.imageUrl}
-                                height={currentUser.imageHeight}
-                                width={currentUser.imageWidth}
-                                alt={getNameOfUser(currentUser)}
+                                src={user.imageUrl}
+                                height={user.imageHeight}
+                                width={user.imageWidth}
+                                alt={getNameOfUser(user)}
                             />
                         </div>
                     )}
