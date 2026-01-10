@@ -1,4 +1,4 @@
-import { NameEnum, User } from "@/types/generated";
+import { RoleName, User } from "@/types/generated";
 import { zUserWithoutChildren } from "@/types/generated/zod.gen";
 import { z } from "zod";
 
@@ -32,7 +32,7 @@ const userSchema = (t: (key: string, params?: {}) => string, allUsers: User[]) =
                 }),
             }),
             showPassword: z.boolean(),
-            roleName: z.enum(NameEnum, {
+            roleName: z.enum(RoleName, {
                 error: t("validation.required", {
                     field: t("pages.user.role"),
                 }),

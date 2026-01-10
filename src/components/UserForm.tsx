@@ -11,7 +11,7 @@ import { setCurrentUser } from "@/redux/features/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import userSchema from "@/schema/userSchema";
 import { ButtonType } from "@/types/ButtonProps";
-import { NameEnum, User } from "@/types/generated";
+import { RoleName, User } from "@/types/generated";
 import { getNameOfUser, getRoleDescription, handleError, hasAuthority, isUserSystemAdmin } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC, useEffect } from "react";
@@ -36,7 +36,7 @@ interface UserInput {
     password: string;
     confirmPassword: string;
     area?: string;
-    roleName: NameEnum;
+    roleName: RoleName;
     locked: boolean;
     lastLoginDate?: Date;
     facebookUserId?: string;
@@ -72,7 +72,7 @@ const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
     const methods = useForm<UserInput>({
         defaultValues: {
             ...rest,
-            roleName: user.role.name as NameEnum,
+            roleName: user.role.name as RoleName,
             password: user.id ? ikkebyttpassord : "",
             confirmPassword: user.id ? ikkebyttpassord : "",
             showPassword: false,
@@ -183,7 +183,7 @@ const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
         }
     };
 
-    const roller = Object.keys(NameEnum).map((role) => ({
+    const roller = Object.keys(RoleName).map((role) => ({
         key: role,
         value: getRoleDescription(t, role),
     }));

@@ -17,7 +17,7 @@ import PageNotFound from "@/pages/pagenotfound.page";
 import RegisterPage from "@/pages/register.page";
 import UnauthorizePage from "@/pages/unauthorize.page";
 import UserPage from "@/pages/user.page";
-import { NameEnum } from "@/types/generated";
+import { RoleName } from "@/types/generated";
 import { Suspense, lazy } from "react";
 import { createBrowserRouter } from "react-router";
 
@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         children: [
             {
                 element: (
-                    <RequireUser requiredAutorities={[NameEnum.ROLE_USER, NameEnum.ROLE_ADMIN, NameEnum.ROLE_MASTER]} />
+                    <RequireUser requiredAutorities={[RoleName.ROLE_USER, RoleName.ROLE_ADMIN, RoleName.ROLE_MASTER]} />
                 ),
                 children: [
                     { index: true, element: <HomePage /> },
@@ -78,7 +78,7 @@ const router = createBrowserRouter([
                         children: [{ path: "user", element: <UserPage /> }],
                     },
                     {
-                        element: <RequireUser requiredAutorities={[NameEnum.ROLE_ADMIN, NameEnum.ROLE_MASTER]} />,
+                        element: <RequireUser requiredAutorities={[RoleName.ROLE_ADMIN, RoleName.ROLE_MASTER]} />,
                         children: [
                             {
                                 path: "admin/beers",

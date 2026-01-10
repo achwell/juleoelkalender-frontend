@@ -12,7 +12,7 @@ import {
 } from "@/redux/api/beerCalendarApi";
 import { useGetCalendarQuery, useGetCalendarWithBeersQuery, useGetCalendarsQuery } from "@/redux/api/calendarApi";
 import ButtonProps, { ButtonType } from "@/types/ButtonProps";
-import { Beer, BeerCalendar, CalendarWithBeer, NameEnum } from "@/types/generated";
+import { Beer, BeerCalendar, CalendarWithBeer, RoleName } from "@/types/generated";
 import { findFirstAvailableDay, handleError } from "@/utils";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -137,9 +137,9 @@ const CalendarDetailsPage = () => {
                             password: "",
                             role: {
                                 id: "",
-                                name: NameEnum.ROLE_USER,
+                                name: RoleName.ROLE_USER,
                                 authorities: [],
-                                authority: NameEnum.ROLE_USER,
+                                authority: RoleName.ROLE_USER,
                             },
                             calendarToken: [],
                             createdDate: new Date(),

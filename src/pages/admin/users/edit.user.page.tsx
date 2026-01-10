@@ -4,7 +4,7 @@ import MyBeersTable from "@/components/tables/MyBeersTable";
 import { useGetUserQuery } from "@/redux/api/userApi";
 import { setCurrentUser } from "@/redux/features/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { CalendarToken, NameEnum, User } from "@/types/generated";
+import { CalendarToken, RoleName, User } from "@/types/generated";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -41,7 +41,7 @@ const EditUserPage = () => {
                 middleName: "",
                 lastName: "",
                 password: "",
-                role: { id: "", name: NameEnum.ROLE_USER, authorities: [], authority: NameEnum.ROLE_USER },
+                role: { id: "", name: RoleName.ROLE_USER, authorities: [], authority: RoleName.ROLE_USER },
                 createdDate: new Date(),
                 facebookUserId: "",
                 imageHeight: undefined,

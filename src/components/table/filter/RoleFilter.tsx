@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/redux/hooks";
-import { NameEnum } from "@/types/generated";
+import { RoleName } from "@/types/generated";
 import { getRoleDescription } from "@/utils";
 import { Column } from "@tanstack/react-table";
 import { FC, MouseEvent } from "react";
@@ -16,7 +16,7 @@ const RoleFilter: FC<Props> = ({ t, column }) => {
         e: MouseEvent<HTMLInputElement>,
         columnFilterValue: string,
         column: Column<any>,
-        role: NameEnum
+        role: RoleName
     ) => {
         // @ts-ignore
         const { checked } = e.target;
@@ -26,14 +26,14 @@ const RoleFilter: FC<Props> = ({ t, column }) => {
             (checked ? [...existingValues, role] : existingValues.filter((s) => s !== role)).join(",")
         );
     };
-    if (!role || role === NameEnum.ROLE_USER) return null;
+    if (!role || role === RoleName.ROLE_USER) return null;
     return (
         <fieldset className="w-36 border shadow rounded bg-white p-2">
-            {role === NameEnum.ROLE_MASTER && (
+            {role === RoleName.ROLE_MASTER && (
                 <label className="flex items-start">
                     <input
                         type="checkbox"
-                        value={NameEnum.ROLE_MASTER}
+                        value={RoleName.ROLE_MASTER}
                         name="role"
                         className="mt-1 mr-2 shrink-0"
                         onClick={(e) =>
@@ -41,19 +41,19 @@ const RoleFilter: FC<Props> = ({ t, column }) => {
                                 e,
                                 columnFilterValue ? (columnFilterValue as string) : "",
                                 column,
-                                NameEnum.ROLE_MASTER
+                                RoleName.ROLE_MASTER
                             )
                         }
                     />
-                    {getRoleDescription(t, NameEnum.ROLE_MASTER)}
+                    {getRoleDescription(t, RoleName.ROLE_MASTER)}
                 </label>
             )}
-            {role === NameEnum.ROLE_ADMIN ||
-                (role === NameEnum.ROLE_MASTER && (
+            {role === RoleName.ROLE_ADMIN ||
+                (role === RoleName.ROLE_MASTER && (
                     <label className="flex items-start">
                         <input
                             type="checkbox"
-                            value={NameEnum.ROLE_ADMIN}
+                            value={RoleName.ROLE_ADMIN}
                             name="role"
                             className="mt-1 mr-2 shrink-0"
                             onClick={(e) =>
@@ -61,17 +61,17 @@ const RoleFilter: FC<Props> = ({ t, column }) => {
                                     e,
                                     columnFilterValue ? (columnFilterValue as string) : "",
                                     column,
-                                    NameEnum.ROLE_ADMIN
+                                    RoleName.ROLE_ADMIN
                                 )
                             }
                         />
-                        {getRoleDescription(t, NameEnum.ROLE_ADMIN)}
+                        {getRoleDescription(t, RoleName.ROLE_ADMIN)}
                     </label>
                 ))}
             <label className="flex items-start">
                 <input
                     type="checkbox"
-                    value={NameEnum.ROLE_USER}
+                    value={RoleName.ROLE_USER}
                     name="role"
                     className="mt-1 mr-2 shrink-0"
                     onClick={(e) =>
@@ -79,11 +79,11 @@ const RoleFilter: FC<Props> = ({ t, column }) => {
                             e,
                             columnFilterValue ? (columnFilterValue as string) : "",
                             column,
-                            NameEnum.ROLE_USER
+                            RoleName.ROLE_USER
                         )
                     }
                 />
-                {getRoleDescription(t, NameEnum.ROLE_USER)}
+                {getRoleDescription(t, RoleName.ROLE_USER)}
             </label>
         </fieldset>
     );

@@ -167,7 +167,7 @@
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
                     }
                 }
             },
@@ -184,7 +184,7 @@
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
                     }
                 }
             },
@@ -518,7 +518,7 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "*/*": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": { "$ref": "#/components/schemas/Calendar" },
@@ -539,7 +539,7 @@
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
+                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Calendar" } } }
                     }
                 }
             }
@@ -633,7 +633,7 @@
                         "name": "direction",
                         "in": "path",
                         "required": true,
-                        "schema": { "type": "string", "enum": ["UP", "DOWN"] }
+                        "schema": { "$ref": "#/components/schemas/Direction" }
                     }
                 ],
                 "responses": { "200": { "description": "OK" } }
@@ -942,7 +942,7 @@
                     "200": {
                         "description": "OK",
                         "content": {
-                            "*/*": {
+                            "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": { "$ref": "#/components/schemas/CalendarWithBeer" },
@@ -1224,7 +1224,7 @@
                 "type": "object",
                 "properties": {
                     "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string", "enum": ["ROLE_USER", "ROLE_ADMIN", "ROLE_MASTER"] },
+                    "name": { "$ref": "#/components/schemas/RoleName" },
                     "authorities": {
                         "type": "array",
                         "items": { "$ref": "#/components/schemas/Authority" },
@@ -1234,6 +1234,7 @@
                 },
                 "required": ["authorities", "authority", "id", "name"]
             },
+            "RoleName": { "type": "string", "enum": ["ROLE_USER", "ROLE_ADMIN", "ROLE_MASTER"] },
             "User": {
                 "type": "object",
                 "properties": {
@@ -1410,6 +1411,7 @@
                     "user"
                 ]
             },
+            "Direction": { "type": "string", "enum": ["UP", "DOWN"] },
             "RegisterRequest": {
                 "type": "object",
                 "properties": {

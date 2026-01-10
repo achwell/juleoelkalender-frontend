@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { NameEnum, User } from "../src/types/generated";
+import { RoleName, User } from "../src/types/generated";
 import {
     calculateAverage,
     findFirstAvailableDay,
@@ -15,27 +15,32 @@ import {
 
 const roleUser = {
     id: "1",
-    name: NameEnum.ROLE_USER,
+    name: RoleName.ROLE_USER,
     authorities: [{ id: "1", name: "none" }],
+    authority: RoleName.ROLE_USER,
 };
 const roleAdmin = {
-    name: NameEnum.ROLE_ADMIN,
+    name: RoleName.ROLE_ADMIN,
     authorities: [
         { id: "1", name: "none" },
         { id: "2", name: "some" },
     ],
+    authority: RoleName.ROLE_ADMIN,
 };
 
 const roleMaster = {
-    name: NameEnum.ROLE_MASTER,
+    name: RoleName.ROLE_MASTER,
     authorities: [
         { id: "1", name: "none" },
         { id: "2", name: "some" },
         { id: "3", name: "all" },
     ],
+    authority: RoleName.ROLE_MASTER,
 };
 
 const user: User = {
+    createdDate: undefined,
+    imageSilhouette: false,
     area: undefined,
     beers: [],
     calendarToken: [],
@@ -45,7 +50,6 @@ const user: User = {
     lastName: "",
     locked: false,
     middleName: undefined,
-    name: undefined,
     password: "",
     role: roleUser,
 };

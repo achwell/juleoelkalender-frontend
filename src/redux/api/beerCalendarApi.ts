@@ -1,12 +1,12 @@
 import { BASE_URL } from "@/environment";
 import { RootState } from "@/redux/store";
-import { BeerCalendar } from "@/types/generated";
+import { BeerCalendar, Direction } from "@/types/generated";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface MoveCalendar {
     calendarId: string;
     day: number;
-    direction: "UP" | "DOWN";
+    direction: Direction;
 }
 
 export const beerCalendarApi = createApi({

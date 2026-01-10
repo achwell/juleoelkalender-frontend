@@ -1,6 +1,6 @@
 import { HealthStatus } from "@/redux/features/dashboardSlice";
 import ErrorMessage from "@/types/ErrorMessage";
-import { NameEnum, Review, User } from "@/types/generated";
+import { Review, RoleName, User } from "@/types/generated";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import type { SerializedError } from "@reduxjs/toolkit";
@@ -10,14 +10,14 @@ export const isUserAdmin = (user: User | undefined | null) => {
     if (!user) {
         return false;
     }
-    return user.role.name === NameEnum.ROLE_ADMIN || user.role.name === NameEnum.ROLE_MASTER;
+    return user.role.name === RoleName.ROLE_ADMIN || user.role.name === RoleName.ROLE_MASTER;
 };
 
 export const isUserSystemAdmin = (user: User | undefined | null) => {
     if (!user) {
         return false;
     }
-    return user.role.name === NameEnum.ROLE_MASTER;
+    return user.role.name === RoleName.ROLE_MASTER;
 };
 
 export const hasAuthority = (user: User | null | undefined, authority: string) => {
@@ -27,11 +27,11 @@ export const hasAuthority = (user: User | null | undefined, authority: string) =
 
 export const getRoleDescription = (t: (key: string) => string, role: string) => {
     switch (role) {
-        case NameEnum.ROLE_USER:
+        case RoleName.ROLE_USER:
             return t("role.user");
-        case NameEnum.ROLE_ADMIN:
+        case RoleName.ROLE_ADMIN:
             return t("role.admin");
-        case NameEnum.ROLE_MASTER:
+        case RoleName.ROLE_MASTER:
             return t("role.master");
         default:
             return "";

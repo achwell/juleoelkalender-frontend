@@ -4,7 +4,7 @@ import Table from "@/components/table/Table";
 import { MoveCalendar, useDeleteBeerCalendarMutation } from "@/redux/api/beerCalendarApi";
 import { useAppSelector } from "@/redux/hooks";
 import ButtonProps, { ButtonType } from "@/types/ButtonProps";
-import { Beer, BeerCalendar, Calendar, CalendarWithBeer } from "@/types/generated";
+import { Beer, BeerCalendar, Calendar, CalendarWithBeer, Direction } from "@/types/generated";
 import { handleError, hasAuthority } from "@/utils";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FC, useEffect, useState } from "react";
@@ -82,7 +82,7 @@ const CalendarBeersTable: FC<{
         moveBeerCalendars({
             calendarId,
             day,
-            direction: "UP",
+            direction: Direction.UP,
         }).then(async () => await refreshData());
     };
 
@@ -90,7 +90,7 @@ const CalendarBeersTable: FC<{
         moveBeerCalendars({
             calendarId,
             day,
-            direction: "DOWN",
+            direction: Direction.DOWN,
         }).then(async () => await refreshData());
     };
 
