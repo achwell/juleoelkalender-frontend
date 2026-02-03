@@ -2678,11 +2678,8 @@
                     "accountNonLocked": {
                         "type": "boolean"
                     },
-                    "accountNonExpired": {
-                        "type": "boolean"
-                    },
-                    "credentialsNonExpired": {
-                        "type": "boolean"
+                    "username": {
+                        "type": "string"
                     },
                     "authorities": {
                         "type": "array",
@@ -2690,11 +2687,14 @@
                             "$ref": "#/components/schemas/GrantedAuthority"
                         }
                     },
-                    "username": {
-                        "type": "string"
-                    },
                     "password": {
                         "type": "string"
+                    },
+                    "accountNonExpired": {
+                        "type": "boolean"
+                    },
+                    "credentialsNonExpired": {
+                        "type": "boolean"
                     },
                     "enabled": {
                         "type": "boolean"
