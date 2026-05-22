@@ -1,7 +1,7 @@
 export default interface DiskSpaceDetails {
-    total: number;
-    free: number;
-    threshold: number;
-    path: string;
-    exists: boolean;
+  total: number;
+  free: number;
+  threshold: number;
+  path: string;
+  exists: boolean;
 }

@@ -1,21 +1,21 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface BeerStylesState {
-    beerStyles: string[];
+  beerStyles: string[];
 }
 
 const initialState: BeerStylesState = {
-    beerStyles: [],
+  beerStyles: [],
 };
 
 export const beerStylesSlice = createSlice({
-    name: "beerStyles",
-    initialState,
-    reducers: {
-        setBeerStyles: (state: BeerStylesState, action: PayloadAction<string[]>) => {
-            state.beerStyles = action.payload;
-        },
+  name: "beerStyles",
+  initialState,
+  reducers: {
+    setBeerStyles: (state: BeerStylesState, action: PayloadAction<string[]>) => {
+      state.beerStyles = action.payload;
     },
+  },
 });
 export const { setBeerStyles } = beerStylesSlice.actions;
 export default beerStylesSlice.reducer;

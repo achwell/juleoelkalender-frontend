@@ -7,50 +7,50 @@ import { useEffect } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router";
 
 interface JwtToken {
-    authorities: string;
-    exp: number;
-    iat: number;
-    sub: string;
-    username: string;
+  authorities: string;
+  exp: number;
+  iat: number;
+  sub: string;
+  username: string;
 }
 
 const RequireUser = ({ requiredAutorities }: { requiredAutorities: string[] }) => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-    const { currentUser, token } = store.getState().authState;
+  const { currentUser, token } = store.getState().authState;
 
-    useEffect(() => {
-        const logout = async () => {
-            dispatch(setCurrentUser(null));
-            dispatch(setToken(null));
-            navigate("/logout");
-        };
-
-        if (token) {
-            const decodedJwt: JwtToken = jwtDecode(token);
-            if (!(decodedJwt && decodedJwt.exp * 1000 >= Date.now())) {
-                logout().catch(console.error);
-            }
-        }
-    }, [token]);
-
-    const hasRights = (user: User) => {
-        return requiredAutorities.filter((value) =>
-            user.role.authorities.map((authority) => authority.name).includes(value)
-        );
+  useEffect(() => {
+    const logout = async () => {
+      dispatch(setCurrentUser(null));
+      dispatch(setToken(null));
+      navigate("/logout");
     };
 
-    if (currentUser && hasRights(currentUser)) {
-        return <Outlet />;
+    if (token) {
+      const decodedJwt: JwtToken = jwtDecode(token);
+      if (!(decodedJwt && decodedJwt.exp * 1000 >= Date.now())) {
+        logout().catch(console.error);
+      }
     }
+  }, [token]);
 
-    if (currentUser) {
-        return <Navigate to="/unauthorized" state={{ from: location }} replace />;
-    }
+  const hasRights = (user: User) => {
+    return requiredAutorities.filter((value) =>
+      user.role.authorities.map((authority) => authority.name).includes(value),
+    );
+  };
 
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (currentUser && hasRights(currentUser)) {
+    return <Outlet />;
+  }
+
+  if (currentUser) {
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
+  }
+
+  return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default RequireUser;

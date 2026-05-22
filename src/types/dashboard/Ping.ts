@@ -1,3 +1,3 @@
 export default interface Ping {
-    status: string;
+  status: string;
 }

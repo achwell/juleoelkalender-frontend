@@ -1,0 +1,56 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "plugins": ["eslint", "typescript", "react", "react-hooks", "react-perf", "jsx-a11y", "import", "unicorn"],
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "settings": {
+    "react": {
+      "version": "19.2.4"
+    }
+  },
+  "rules": {
+    "eslint/no-console": "warn",
+    "eslint/no-debugger": "error",
+    "eslint/no-constant-condition": "warn",
+    "import/no-cycle": "warn",
+    "import/no-mutable-exports": "error",
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": ["**/*.css", "**/*.scss", "./main"]
+      }
+    ],
+    "react/react-in-jsx-scope": "off",
+    "react/no-unstable-nested-components": "warn",
+    "react/no-danger": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "jsx-a11y/no-autofocus": "warn",
+    "jsx-a11y/alt-text": "error",
+    "typescript/no-unused-vars": "warn",
+    "typescript/ban-types": "warn",
+    "unicorn/consistent-function-scoping": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{test,spec}.{ts,tsx}"],
+      "plugins": ["jest", "vitest"],
+      "rules": {
+        "eslint/no-console": "off",
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["vite.config.*", "vitest.config.*", "*.config.{js,cjs,mjs,ts}"],
+      "env": {
+        "node": true
+      }
+    }
+  ],
+  "ignorePatterns": ["dist/", "coverage/", "node_modules/"]
+}

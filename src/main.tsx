@@ -12,13 +12,13 @@ import "@/style/index.css";
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
-    <StrictMode>
-        <ErrorBoundary FallbackComponent={ErrorFallback} onError={(error) => console.error({ error })}>
-            <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
-                    <App />
-                </PersistGate>
-            </Provider>
-        </ErrorBoundary>
-    </StrictMode>
+  <StrictMode>
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={(error) => console.error({ error })}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
+      </Provider>
+    </ErrorBoundary>
+  </StrictMode>,
 );

@@ -1,4 +1,4 @@
 export default interface IGenericResponse {
-    status: string;
-    message: string;
+  status: string;
+  message: string;
 }

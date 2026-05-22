@@ -1,4 +1,4 @@
 export default interface DbDetails {
-    database: string;
-    validationQuery: string;
+  database: string;
+  validationQuery: string;
 }

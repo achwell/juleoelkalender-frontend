@@ -1,37 +1,35 @@
 {
-  "compilerOptions" : {
-    "target" : "ESNext",
-    "lib" : [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
-    "module" : "ESNext",
-    "skipLibCheck" : true,
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "skipLibCheck": true,
     /* Bundler mode */
-    "moduleResolution" : "bundler",
-    "allowImportingTsExtensions" : false,
-    "resolveJsonModule" : true,
-    "isolatedModules" : true,
-    "noEmit" : true,
-    "jsx" : "react-jsx",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
     /* Linting */
-    "strict" : true,
-    "noUnusedLocals" : true,
-    "noUnusedParameters" : true,
-    "noFallthroughCasesInSwitch" : true,
-    "paths" : {
-      "@/*" : [
-        "./src/*"
-      ]
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@redux/*": ["./src/redux/*"],
+      "@schema/*": ["./src/schema/*"],
+      "@type/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
-  "include" : [
-    "src"
-  ],
-  "references" : [
+  "include": ["src"],
+  "references": [
     {
-      "path" : "./tsconfig.node.json"
+      "path": "./tsconfig.node.json"
     }
   ]
 }

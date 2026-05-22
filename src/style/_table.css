@@ -1,47 +1,48 @@
 table {
+  width: fit-content;
+
+  tr {
+    display: flex;
     width: fit-content;
+  }
 
-    tr {
-        display: flex;
-        width: fit-content;
+  th,
+  td {
+    > div.userImage {
+      width: 3.125rem;
+    }
+  }
+
+  th {
+    position: relative;
+    font-weight: bold;
+    text-align: center;
+
+    .resizer {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      right: 0;
+      width: 0.3125rem;
+      background: rgba(0, 0, 0, 0.5);
+      cursor: col-resize;
+      user-select: none;
+      touch-action: none;
+
+      .isResizing {
+        background: blue;
+        opacity: 1;
+      }
     }
 
-    th,
-    td {
-        > div.userImage {
-            width: 3.125rem;
-        }
+    @media (hover: hover) {
+      .resizer {
+        opacity: 0;
+      }
+
+      *:hover > .resizer {
+        opacity: 1;
+      }
     }
-
-    th {
-        position: relative;
-        font-weight: bold;
-        text-align: center;
-
-        .resizer {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            right: 0;
-            width: 0.3125rem;
-            background: rgba(0, 0, 0, 0.5);
-            cursor: col-resize;
-            user-select: none;
-            touch-action: none;
-
-            .isResizing {
-                background: blue;
-                opacity: 1;
-            }
-        }
-        @media (hover: hover) {
-            .resizer {
-                opacity: 0;
-            }
-
-            *:hover > .resizer {
-                opacity: 1;
-            }
-        }
-    }
+  }
 }
