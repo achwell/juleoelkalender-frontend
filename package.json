@@ -78,7 +78,7 @@
     "vite": "^8.0.14",
     "vite-plugin-pwa": "^1.3.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.11"
   },
   "resolutions": {
     "react-dev-utils": "12.0.1"
