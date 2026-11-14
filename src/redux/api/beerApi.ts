@@ -1,29 +1,16 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import BeerWithCalendar from "@/types/BeerWithCalendar";
 import BeerWithCalendarAndDayAndReview from "@/types/BeerWithCalendarAndDayAndReview";
 import { Beer, BeerWithCalendarAndDay } from "@/types/generated";
 import { downloadBinaryData } from "@/utils";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const beerApi = createApi({
-  reducerPath: "beerApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/beer`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const beerApi = baseApi.injectEndpoints({
   endpoints: (builder) => {
     return {
       getBeers: builder.query<Beer[], void>({
         query: () => {
           return {
-            url: "",
+            url: "/api/v1/beer",
             credentials: "include",
           };
         },
@@ -32,7 +19,7 @@ export const beerApi = createApi({
       getAllBeersWithCalendar: builder.query<BeerWithCalendarAndDay[], void>({
         query: () => {
           return {
-            url: "/allcalendar",
+            url: "/api/v1/beer/allcalendar",
             credentials: "include",
           };
         },
@@ -41,7 +28,7 @@ export const beerApi = createApi({
       downloadAllBeersExcel: builder.mutation({
         async queryFn({ name, language }, _api, _extraOptions, baseQuery) {
           const result = await baseQuery({
-            url: `/allcalendarexport/${language}`,
+            url: `/api/v1/beer/allcalendarexport/${language}`,
             cache: "no-cache",
             responseHandler: (response) => response.blob(),
           });
@@ -51,7 +38,7 @@ export const beerApi = createApi({
       getBeersWithCalendar: builder.query<BeerWithCalendar[], void>({
         query: () => {
           return {
-            url: "/calendar",
+            url: "/api/v1/beer/calendar",
             credentials: "include",
           };
         },
@@ -60,7 +47,7 @@ export const beerApi = createApi({
       getBeersWithCalendarByCalendarId: builder.query<BeerWithCalendar[], string>({
         query: (id) => {
           return {
-            url: `/calendar/${id}`,
+            url: `/api/v1/beer/calendar/${id}`,
             credentials: "include",
           };
         },
@@ -69,7 +56,7 @@ export const beerApi = createApi({
       getBeersWithReviewByCalendar: builder.query<BeerWithCalendarAndDayAndReview[], string>({
         query: (calendarId) => {
           return {
-            url: `/review/${calendarId}`,
+            url: `/api/v1/beer/review/${calendarId}`,
             credentials: "include",
           };
         },
@@ -84,7 +71,7 @@ export const beerApi = createApi({
       >({
         query: ({ calendarId, userId }) => {
           return {
-            url: `/review/${calendarId}/${userId}`,
+            url: `/api/v1/beer/review/${calendarId}/${userId}`,
             credentials: "include",
           };
         },
@@ -93,7 +80,7 @@ export const beerApi = createApi({
       getTodaysBeers: builder.query<BeerWithCalendarAndDayAndReview[], void>({
         query: () => {
           return {
-            url: `/today`,
+            url: `/api/v1/beer/today`,
             credentials: "include",
           };
         },
@@ -102,7 +89,7 @@ export const beerApi = createApi({
       getBeer: builder.query<Beer, string>({
         query: (id) => {
           return {
-            url: `/${id}`,
+            url: `/api/v1/beer/${id}`,
             credentials: "include",
           };
         },
@@ -110,7 +97,7 @@ export const beerApi = createApi({
       }),
       addBeer: builder.mutation<Beer, Partial<Beer>>({
         query: (body) => ({
-          url: "",
+          url: "/api/v1/beer",
           credentials: "include",
           method: "POST",
           body,
@@ -119,7 +106,7 @@ export const beerApi = createApi({
       }),
       updateBeer: builder.mutation<Beer, Pick<Beer, "id"> & Partial<Beer>>({
         query: ({ id, ...patch }) => ({
-          url: `/${id}`,
+          url: `/api/v1/beer/${id}`,
           credentials: "include",
           method: "PUT",
           body: patch,
@@ -141,7 +128,7 @@ export const beerApi = createApi({
       deleteBeer: builder.mutation<{ success: boolean; id: string }, string>({
         query(id) {
           return {
-            url: `/${id}`,
+            url: `/api/v1/beer/${id}`,
             credentials: "include",
             method: "DELETE",
           };

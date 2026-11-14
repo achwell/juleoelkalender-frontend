@@ -1,6 +1,6 @@
 import i18n from "@/i18n";
 import FormInputProps from "@/types/FormInputProps";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { parseISO } from "date-fns";
 import { format } from "date-fns-tz";
 import { enUS } from "date-fns/locale/en-US";

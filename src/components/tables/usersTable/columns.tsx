@@ -7,8 +7,42 @@ import UserTableAction from "@/components/tables/usersTable/UserTableAction";
 import { CalendarToken, Role, User } from "@/types/generated";
 import TextFunction from "@/types/TextFunction";
 import { getNameOfUser, getRoleDescription } from "@/utils";
-import { createColumnHelper, FilterFn, Row } from "@tanstack/react-table";
+import { createColumnHelper, FilterFn, Row } from "@/components/table/tableTypes";
 import { format } from "date-fns-tz";
+
+const isPassive = (calendarToken: CalendarToken[]) => {
+  return calendarToken.filter((c) => c.active).length < 1;
+};
+
+const roleFilterFn: FilterFn<User> = (row, columnId, filterValue: string) => {
+  const roleObj = row.getValue<Role>(columnId);
+  const roles = filterValue
+    .toUpperCase()
+    .split(",")
+    .filter((r) => !!r && r !== "");
+  return roles.includes(roleObj.name);
+};
+
+const arrayLengthFilter: FilterFn<User> = (row, columnId, filterValue) => {
+  // @ts-ignore
+  const rowValue: number = row.getValue(columnId).length ?? 0;
+  const [min, max] = filterValue;
+  const maxVal = max ? Number(max) : undefined;
+
+  if (!maxVal && !min) {
+    return true;
+  }
+  if (maxVal && min) {
+    return rowValue >= min && rowValue <= maxVal;
+  }
+  if (maxVal) {
+    return rowValue <= maxVal;
+  }
+  if (min) {
+    return rowValue >= min;
+  }
+  return true;
+};
 
 const columns = (
   t: TextFunction,
@@ -20,48 +54,19 @@ const columns = (
   unlock: (user: User) => void,
 ) => {
   const dateformat = t("common.dateformat");
-  const isPassive = (calendarToken: CalendarToken[]) => {
-    return calendarToken.filter((c) => c.active).length < 1;
-  };
-  const roleFilterFn = <TData extends User>(row: Row<TData>, columnId: string, filterValue: string) => {
-    const roleObj = row.getValue<Role>(columnId);
-    const roles = filterValue
-      .toUpperCase()
-      .split(",")
-      .filter((r) => !!r && r !== "");
-    return roles.includes(roleObj.name);
-  };
+
   const dateFilterFn = <TData extends User>(row: Row<TData>, columnId: string, filterValue: string) => {
     const cell = row.getValue<Date | undefined>(columnId);
     return cell == null ? false : format(cell, dateformat).includes(filterValue);
   };
-  const arrayLengthFilter: FilterFn<User> = (row, columnId, filterValue) => {
-    // @ts-ignore
-    const rowValue: number = row.getValue(columnId).length ?? 0;
-    const [min, max] = filterValue;
-    const maxVal = max ? Number(max) : undefined;
 
-    if (!maxVal && !min) {
-      return true;
-    }
-    if (maxVal && min) {
-      return rowValue >= min && rowValue <= maxVal;
-    }
-    if (maxVal) {
-      return rowValue <= maxVal;
-    }
-    if (min) {
-      return rowValue >= min;
-    }
-    return true;
-  };
   roleFilterFn.autoRemove = (val: any) => !val;
   roleFilterFn.resolveFilterValue = (val: any) => val.toString().toLowerCase().trim();
   dateFilterFn.autoRemove = (val: any) =>
     val === undefined || val === null || (typeof val === "string" && val.trim() === "");
   dateFilterFn.resolveFilterValue = (val: any) => (typeof val === "string" ? val.trim() : val);
   arrayLengthFilter.autoRemove = (val: any) => val === undefined || val === null;
-  arrayLengthFilter.resolveFilterValue = (val: any) => (typeof Array.isArray(val) ? val : [0, undefined]);
+  arrayLengthFilter.resolveFilterValue = (val: any) => (Array.isArray(val) ? val : [0, undefined]);
 
   const metaRole: Meta = { filterVariant: FilterVariant.role };
   const metaBeers: Meta = {

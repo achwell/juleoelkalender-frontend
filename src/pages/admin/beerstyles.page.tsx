@@ -14,8 +14,8 @@ import { useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/types/ButtonProps";
 import { BeerStyle } from "@/types/generated";
 import { handleErrorWithStatus, hasAuthority } from "@/utils";
-import { createColumnHelper } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { createColumnHelper } from "@/components/table/tableTypes";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -24,96 +24,76 @@ const initialState: BeerStyle | undefined = { id: uuidv4(), name: "" };
 const BeerstylesPage = () => {
   const { t } = useTranslation();
 
-  const [
-    addBeerStyle,
-    { isLoading: isAdding, isSuccess: isSuccessAdding, data: newBeerStyle, isError: isErrorAdding, error: errorAdding },
-  ] = useAddBeerStyleMutation();
+  const [addBeerStyleRequest, { isLoading: isAdding }] = useAddBeerStyleMutation();
+  const addBeerStyle = async (...args: Parameters<typeof addBeerStyleRequest>) => {
+    const result = await addBeerStyleRequest(...args);
 
-  const [
-    deleteBeerStyle,
-    { isLoading: isDeleting, isSuccess: isSuccessDelete, isError: isErrorDelete, error: errorDelete },
-  ] = useDeleteBeerStyleMutation();
+    if ("data" in result && result.data) {
+      if (result.data) {
+        toast.success(t("add.added", { field: result.data?.name }));
+        setSelectedBeerstyle(result.data);
+      }
+      setShowAddEditDialog(false);
+      await refetch();
+    }
+    if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      toast.error(t("add.error", { field: args[0].name }));
+      setSelectedBeerstyle(initialState);
+      setShowDeleteDialog(false);
+    }
 
-  const [
-    updateBeerStyle,
-    {
-      isLoading: isUpdating,
-      isSuccess: isSuccessUpdating,
-      data: updatedBeerStyle,
-      isError: isErrorUpdating,
-      error: errorUpdating,
-    },
-  ] = useUpdateBeerStyleMutation();
+    return result;
+  };
+
+  const [deleteBeerStyleRequest, { isLoading: isDeleting }] = useDeleteBeerStyleMutation();
+  const deleteBeerStyle = async (...args: Parameters<typeof deleteBeerStyleRequest>) => {
+    const result = await deleteBeerStyleRequest(...args);
+
+    if ("data" in result) {
+      toast.success(t("delete.deleted", { name: selectedBeerstyle?.name }));
+      await refetch();
+      setSelectedBeerstyle(initialState);
+      setShowDeleteDialog(false);
+    }
+    if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      toast.error(t("delete.error", { name: selectedBeerstyle?.name }));
+      setSelectedBeerstyle(initialState);
+      setShowDeleteDialog(false);
+    }
+
+    return result;
+  };
+
+  const [updateBeerStyleRequest, { isLoading: isUpdating }] = useUpdateBeerStyleMutation();
+  const updateBeerStyle = async (...args: Parameters<typeof updateBeerStyleRequest>) => {
+    const result = await updateBeerStyleRequest(...args);
+
+    if ("data" in result && result.data) {
+      if (result.data) {
+        toast.success(t("update.updated", { field: result.data?.name }));
+        setSelectedBeerstyle(result.data);
+      }
+      setShowAddEditDialog(false);
+      await refetch();
+    }
+    if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      toast.error(t("update.error", { field: selectedBeerstyle?.name }));
+      setSelectedBeerstyle(initialState);
+      setShowDeleteDialog(false);
+    }
+
+    return result;
+  };
+
   const { currentUser } = useAppSelector((state) => state.authState);
 
   const { data: beerStyles, isFetching: isFetchingBeerStyles, refetch } = useGetBeerStylesQuery(currentUser?.id);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showAddEditDialog, setShowAddEditDialog] = useState(false);
   const [selectedBeerstyle, setSelectedBeerstyle] = useState<BeerStyle | undefined>(undefined);
-
-  useEffect(() => {
-    const finish = async () => {
-      toast.success(t("delete.deleted", { name: selectedBeerstyle?.name }));
-      await refetch();
-      setSelectedBeerstyle(initialState);
-      setShowDeleteDialog(false);
-    };
-    if (!isDeleting) {
-      if (isSuccessDelete) {
-        finish();
-      }
-      if (isErrorDelete && errorDelete) {
-        handleErrorWithStatus(t, errorDelete);
-        toast.error(t("delete.error", { name: selectedBeerstyle?.name }));
-        setSelectedBeerstyle(initialState);
-        setShowDeleteDialog(false);
-      }
-    }
-  }, [isDeleting, isSuccessDelete, isErrorDelete, errorDelete]);
-
-  useEffect(() => {
-    const finish = async () => {
-      if (newBeerStyle) {
-        toast.success(t("add.added", { field: newBeerStyle?.name }));
-        setSelectedBeerstyle(newBeerStyle);
-      }
-      setShowAddEditDialog(false);
-      await refetch();
-    };
-    if (!isAdding) {
-      if (isSuccessAdding && newBeerStyle) {
-        finish();
-      }
-      if (isErrorAdding && errorAdding) {
-        handleErrorWithStatus(t, errorAdding);
-        toast.error(t("add.error", { field: newBeerStyle?.name }));
-        setSelectedBeerstyle(initialState);
-        setShowDeleteDialog(false);
-      }
-    }
-  }, [isAdding, isSuccessAdding, newBeerStyle, isErrorAdding, errorAdding]);
-
-  useEffect(() => {
-    const finish = async () => {
-      if (updatedBeerStyle) {
-        toast.success(t("update.updated", { field: updatedBeerStyle?.name }));
-        setSelectedBeerstyle(updatedBeerStyle);
-      }
-      setShowAddEditDialog(false);
-      await refetch();
-    };
-    if (!isUpdating) {
-      if (isSuccessUpdating && updatedBeerStyle) {
-        finish();
-      }
-      if (isErrorUpdating && errorUpdating) {
-        handleErrorWithStatus(t, errorUpdating);
-        toast.error(t("update.error", { field: selectedBeerstyle?.name }));
-        setSelectedBeerstyle(initialState);
-        setShowDeleteDialog(false);
-      }
-    }
-  }, [isUpdating, isSuccessUpdating, updatedBeerStyle, isErrorUpdating, errorUpdating]);
 
   const deleteStyle = async () => {
     if (selectedBeerstyle?.id) {
@@ -212,7 +192,7 @@ const BeerstylesPage = () => {
       />
       <Table
         data={beerStyles}
-        cols={colums}
+        columns={colums}
         actionButtons={
           <ActionKnapper
             buttons={[

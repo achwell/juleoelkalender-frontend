@@ -15,7 +15,12 @@
     }
   },
   "rules": {
-    "eslint/no-console": "warn",
+    "eslint/no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
     "eslint/no-debugger": "error",
     "eslint/no-constant-condition": "warn",
     "import/no-cycle": "warn",
@@ -27,7 +32,12 @@
       }
     ],
     "react/react-in-jsx-scope": "off",
-    "react/no-unstable-nested-components": "warn",
+    "react/no-unstable-nested-components": [
+      "warn",
+      {
+        "allowAsProps": true
+      }
+    ],
     "react/no-danger": "warn",
     "react-hooks/exhaustive-deps": "warn",
     "jsx-a11y/no-autofocus": "warn",

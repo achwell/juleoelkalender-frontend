@@ -3,7 +3,8 @@ import Navigation from "@/components/layout/Navigation";
 import { useRefreshQuery } from "@/redux/api/refreshApi";
 import { setCurrentUser, setToken } from "@/redux/features/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import { isMobile } from "react-device-detect";
 import { Outlet, useNavigate } from "react-router";
 import { ToastContainer } from "react-toastify";
@@ -11,28 +12,24 @@ import { ToastContainer } from "react-toastify";
 const Layout = () => {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.authState);
-  const { data, isFetching, isSuccess, isError, refetch } = useRefreshQuery("", { skip: !currentUser || isMobile });
+  const { data, isFetching, isSuccess, isError } = useRefreshQuery("", {
+    skip: !currentUser || isMobile,
+    pollingInterval: 1800000,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isFetching && isError) {
       navigate("/login");
     }
-  }, [isFetching, isError]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 1800000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [isFetching, isError, navigate]);
 
   useEffect(() => {
     if (!isFetching && isSuccess && data) {
       dispatch(setCurrentUser(data.user));
       dispatch(setToken(data.token));
     }
-  }, [isFetching, isSuccess, data]);
+  }, [isFetching, isSuccess, data, dispatch]);
 
   return (
     <div>
@@ -44,7 +41,9 @@ const Layout = () => {
       <div className="my-12 mx-3 flex flex-col justify-center items-center w-screen">
         <div className="w-screen">
           <div className="flex flex-col items-center justify-items-center">
-            <Outlet />
+            <Suspense fallback={<FullScreenLoader />}>
+              <Outlet />
+            </Suspense>
           </div>
         </div>
       </div>

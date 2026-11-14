@@ -1,54 +1,42 @@
-import { BASE_URL } from "@/environment";
 import ForgottenpasswordProps from "@/types/ForgottenpasswordProps";
 import { PasswordChangeRequest, User } from "@/types/generated";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const passwordChangeRequestApi = createApi({
-  reducerPath: "passwordChangeApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/passwordchange`,
-    mode: "cors",
-    credentials: "omit",
-    prepareHeaders: (headers) => {
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const passwordChangeRequestApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPasswordChangeRequests: builder.query<PasswordChangeRequest[], void>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/passwordchange",
           credentials: "include",
         };
       },
-      providesTags: ["Beer", "Review", "Calendar", "User"],
+      providesTags: ["PasswordChangeRequest"],
     }),
     getPasswordChangeRequest: builder.query<PasswordChangeRequest, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/passwordchange/${id}`,
           credentials: "include",
         };
       },
-      providesTags: ["Beer", "Review", "Calendar", "User"],
+      providesTags: ["PasswordChangeRequest"],
     }),
     addPasswordChangeRequest: builder.mutation<PasswordChangeRequest, Partial<PasswordChangeRequest>>({
       query: (body) => ({
-        url: "",
+        url: "/api/v1/passwordchange",
         credentials: "include",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
+      invalidatesTags: ["PasswordChangeRequest"],
     }),
     updatePasswordChangeRequest: builder.mutation<
       PasswordChangeRequest,
       Pick<PasswordChangeRequest, "id"> & Partial<PasswordChangeRequest>
     >({
       query: ({ id, ...patch }) => ({
-        url: `/${id}`,
+        url: `/api/v1/passwordchange/${id}`,
         credentials: "include",
         method: "PUT",
         body: patch,
@@ -65,24 +53,24 @@ export const passwordChangeRequestApi = createApi({
           patchResult.undo();
         }
       },
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
+      invalidatesTags: ["PasswordChangeRequest"],
     }),
     deletePasswordChangeRequest: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/passwordchange/${id}`,
           credentials: "include",
           method: "DELETE",
         };
       },
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
+      invalidatesTags: ["PasswordChangeRequest"],
     }),
     changePassword: builder.mutation<
       User,
       Pick<ForgottenpasswordProps, "email"> & Pick<ForgottenpasswordProps, "password">
     >({
       query: ({ email, password, ...patch }) => ({
-        url: `/${email}/${password}`,
+        url: `/api/v1/passwordchange/${email}/${password}`,
         credentials: "include",
         method: "PUT",
         body: patch,

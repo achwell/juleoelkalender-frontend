@@ -3,15 +3,10 @@ import { secondsToDhms } from "@/utils";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const Uptime: FC<{ processUptime: number }> = ({ processUptime }) => {
+const UptimeCounter: FC<{ processUptime: number }> = ({ processUptime }) => {
   const { t } = useTranslation();
-  const [uptime, setUptime] = useState(0);
+  const [uptime, setUptime] = useState(processUptime);
 
-  useEffect(() => {
-    if (processUptime) {
-      setUptime(processUptime);
-    }
-  }, [processUptime]);
   useEffect(() => {
     const interval = setInterval(() => {
       setUptime((prevState) => prevState + 1);
@@ -20,4 +15,8 @@ const Uptime: FC<{ processUptime: number }> = ({ processUptime }) => {
   }, []);
   return <Alert severity="success" text={`${t("pages.dashboard.uptime")}: ${secondsToDhms(t, uptime)}`} />;
 };
+const Uptime: FC<{ processUptime: number }> = ({ processUptime }) => (
+  <UptimeCounter key={processUptime} processUptime={processUptime} />
+);
+
 export default Uptime;

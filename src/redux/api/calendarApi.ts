@@ -1,25 +1,12 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import { Calendar, CalendarWithBeer } from "@/types/generated";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const calendarApi = createApi({
-  reducerPath: "calendarApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/calendar`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const calendarApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCalendars: builder.query<Calendar[], void>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/calendar",
           credentials: "include",
         };
       },
@@ -28,7 +15,7 @@ export const calendarApi = createApi({
     getCalendarWithBeers: builder.query<CalendarWithBeer[], string>({
       query: (calendarId) => {
         return {
-          url: `/beer/${calendarId}`,
+          url: `/api/v1/calendar/beer/${calendarId}`,
           credentials: "include",
         };
       },
@@ -37,7 +24,7 @@ export const calendarApi = createApi({
     getCalendar: builder.query<Calendar, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/calendar/${id}`,
           credentials: "include",
         };
       },
@@ -45,7 +32,7 @@ export const calendarApi = createApi({
     }),
     addCalendar: builder.mutation<Calendar, Calendar>({
       query: (body) => ({
-        url: "",
+        url: "/api/v1/calendar",
         credentials: "include",
         method: "POST",
         body,
@@ -54,7 +41,7 @@ export const calendarApi = createApi({
     }),
     updateCalendar: builder.mutation<Calendar, Pick<Calendar, "id"> & Partial<Calendar>>({
       query: ({ id, ...patch }) => ({
-        url: `/${id}`,
+        url: `/api/v1/calendar/${id}`,
         credentials: "include",
         method: "PUT",
         body: patch,
@@ -76,7 +63,7 @@ export const calendarApi = createApi({
     deleteCalendar: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/calendar/${id}`,
           credentials: "include",
           method: "DELETE",
         };

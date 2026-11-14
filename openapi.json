@@ -45,7 +45,7 @@
           "default": {
             "description": "Hent en bruker basert på id",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/User"
                 }
@@ -82,7 +82,7 @@
           "default": {
             "description": "Oppdater bruker",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/User"
                 }
@@ -109,7 +109,7 @@
           "default": {
             "description": "Slett bruker",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -138,7 +138,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Review"
                 }
@@ -175,7 +175,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Review"
                 }
@@ -202,7 +202,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -231,7 +231,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PasswordChangeRequest"
                 }
@@ -268,7 +268,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PasswordChangeRequest"
                 }
@@ -295,7 +295,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -331,7 +331,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/User"
                 }
@@ -424,7 +424,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -453,7 +453,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BeerStyle"
                 }
@@ -490,7 +490,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BeerStyle"
                 }
@@ -517,7 +517,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -546,7 +546,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BeerCalendar"
                 }
@@ -583,7 +583,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BeerCalendar"
                 }
@@ -610,7 +610,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -639,7 +639,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Beer"
                 }
@@ -676,7 +676,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Beer"
                 }
@@ -703,7 +703,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -732,7 +732,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CalendarToken"
                 }
@@ -769,7 +769,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CalendarToken"
                 }
@@ -796,7 +796,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -848,7 +848,7 @@
           "default": {
             "description": "Hent alle brukere",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -878,7 +878,7 @@
           "default": {
             "description": "Opprett bruker",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/User"
                 }
@@ -896,7 +896,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -926,7 +926,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Review"
                 }
@@ -944,7 +944,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -974,7 +974,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PasswordChangeRequest"
                 }
@@ -1092,7 +1092,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1122,7 +1122,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BeerStyle"
                 }
@@ -1140,7 +1140,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1170,7 +1170,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BeerCalendar"
                 }
@@ -1227,7 +1227,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1257,7 +1257,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Beer"
                 }
@@ -1285,7 +1285,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthenticationResponse"
                 }
@@ -1313,7 +1313,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthenticationResponse"
                 }
@@ -1341,7 +1341,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthenticationResponse"
                 }
@@ -1369,7 +1369,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthenticationResponse"
                 }
@@ -1408,7 +1408,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1438,7 +1438,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CalendarToken"
                 }
@@ -1466,7 +1466,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "string"
                 }
@@ -1494,7 +1494,7 @@
           "default": {
             "description": "Eksporter alle brukere til Excel",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "string",
                   "format": "byte"
@@ -1523,7 +1523,7 @@
           "default": {
             "description": "Hent alle brukere basert på e-post",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserDetails"
                 }
@@ -1552,7 +1552,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1584,7 +1584,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "string",
                   "format": "byte"
@@ -1632,7 +1632,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Review"
                 }
@@ -1650,7 +1650,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1672,7 +1672,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DashboardData"
                 }
@@ -1723,7 +1723,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1756,7 +1756,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1798,7 +1798,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1820,7 +1820,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1853,7 +1853,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1885,7 +1885,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "string",
                   "format": "byte"
@@ -1904,7 +1904,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -1936,7 +1936,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "boolean"
                 }
@@ -1954,7 +1954,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AuthenticationResponse"
                 }
@@ -1969,6 +1969,7 @@
     "schemas": {
       "Authority": {
         "type": "object",
+        "description": "En tillatelse som kan tilordnes en rolle.",
         "properties": {
           "id": {
             "type": "string",
@@ -1982,6 +1983,7 @@
       },
       "Beer": {
         "type": "object",
+        "description": "Et øl og informasjon om brygging, brygger og anmeldelser.",
         "properties": {
           "id": {
             "type": "string",
@@ -1994,25 +1996,34 @@
             "type": "string"
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "Beskrivelse av ølet."
           },
           "abv": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Alkoholinnhold i volumprosent.",
+            "example": 5.5
           },
           "ibu": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Ølets bitterhet målt i IBU.",
+            "example": 30
           },
           "ebc": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Ølets farge målt i EBC.",
+            "example": 20
           },
           "recipe": {
-            "type": "string"
+            "type": "string",
+            "description": "Oppskrift på ølet."
           },
           "untapped": {
-            "type": "string"
+            "type": "string",
+            "description": "Referanse til ølet på Untappd."
           },
           "brewedDate": {
             "type": "string",
@@ -2041,7 +2052,9 @@
           },
           "desiredDate": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Ønsket kalenderdag fra 1 til 24.",
+            "example": 24
           }
         },
         "required": [
@@ -2061,6 +2074,7 @@
       },
       "CalendarToken": {
         "type": "object",
+        "description": "Et tilgangstoken til en kalendergruppe.",
         "properties": {
           "id": {
             "type": "string",
@@ -2076,10 +2090,11 @@
             "type": "boolean"
           }
         },
-        "required": ["active", "id", "name", "token"]
+        "required": ["active", "name", "token"]
       },
       "ReviewWithoutChildren": {
         "type": "object",
+        "description": "En anmeldelse uten tilknyttede objekter.",
         "properties": {
           "id": {
             "type": "string",
@@ -2110,26 +2125,18 @@
             "format": "double"
           },
           "comment": {
-            "type": "string"
+            "type": "string",
+            "description": "Fritekst om ølet."
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           }
-        },
-        "required": [
-          "createdAt",
-          "id",
-          "ratingFeel",
-          "ratingLabel",
-          "ratingLooks",
-          "ratingOverall",
-          "ratingSmell",
-          "ratingTaste"
-        ]
+        }
       },
       "Role": {
         "type": "object",
+        "description": "En brukerrolle med tilhørende tillatelser.",
         "properties": {
           "id": {
             "type": "string",
@@ -2143,39 +2150,46 @@
             "items": {
               "$ref": "#/components/schemas/Authority"
             },
+            "minItems": 1,
             "uniqueItems": true
           },
           "authority": {
             "type": "string"
           }
         },
-        "required": ["authorities", "authority", "id", "name"]
+        "required": ["authorities", "name"]
       },
       "RoleName": {
         "type": "string",
+        "description": "Navn på en brukerrolle.",
         "enum": ["ROLE_USER", "ROLE_ADMIN", "ROLE_MASTER"]
       },
       "User": {
         "type": "object",
+        "description": "En bruker med rolle, øl og kalendertilgang.",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Identifikator for brukeren."
           },
           "firstName": {
             "type": "string"
           },
           "middleName": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens mellomnavn."
           },
           "lastName": {
             "type": "string"
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "format": "email"
           },
           "area": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens område."
           },
           "role": {
             "$ref": "#/components/schemas/Role"
@@ -2199,25 +2213,30 @@
           },
           "lastLoginDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Tidspunkt for siste innlogging."
           },
           "createdDate": {
             "type": "string",
             "format": "date-time"
           },
           "facebookUserId": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens Facebook-identifikator."
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "Adresse til brukerens profilbilde."
           },
           "imageHeight": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Profilbildets høyde i piksler."
           },
           "imageWidth": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Profilbildets bredde i piksler."
           },
           "imageSilhouette": {
             "type": "boolean"
@@ -2247,22 +2266,24 @@
           "imageSilhouette",
           "lastName",
           "locked",
-          "password",
           "role"
         ]
       },
       "UserWithoutChildren": {
         "type": "object",
+        "description": "En bruker uten tilknyttede øl.",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Identifikator for brukeren."
           },
           "firstName": {
             "type": "string"
           },
           "middleName": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens mellomnavn."
           },
           "lastName": {
             "type": "string"
@@ -2274,7 +2295,8 @@
             "type": "string"
           },
           "area": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens område."
           },
           "role": {
             "$ref": "#/components/schemas/Role"
@@ -2291,44 +2313,39 @@
           },
           "lastLoginDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Tidspunkt for siste innlogging."
           },
           "createdDate": {
             "type": "string",
             "format": "date-time"
           },
           "facebookUserId": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens Facebook-identifikator."
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "Adresse til brukerens profilbilde."
           },
           "imageHeight": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Profilbildets høyde i piksler."
           },
           "imageWidth": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Profilbildets bredde i piksler."
           },
           "imageSilhouette": {
             "type": "boolean"
           }
-        },
-        "required": [
-          "calendarToken",
-          "createdDate",
-          "email",
-          "firstName",
-          "imageSilhouette",
-          "lastName",
-          "locked",
-          "password",
-          "role"
-        ]
+        }
       },
       "BeerCalendar": {
         "type": "object",
+        "description": "Kobling mellom et øl og en dag i en kalender.",
         "properties": {
           "id": {
             "type": "string",
@@ -2336,7 +2353,9 @@
           },
           "day": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Kalenderdagen ølet er plassert på.",
+            "example": 24
           },
           "beer": {
             "$ref": "#/components/schemas/Beer"
@@ -2349,17 +2368,21 @@
       },
       "Calendar": {
         "type": "object",
+        "description": "En juleølkalender.",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Identifikator for kalenderen."
           },
           "name": {
             "type": "string"
           },
           "year": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Året kalenderen gjelder for.",
+            "example": 2026
           },
           "published": {
             "type": "boolean"
@@ -2382,10 +2405,12 @@
       },
       "Review": {
         "type": "object",
+        "description": "En brukers anmeldelse av et øl i en kalender.",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Identifikator for anmeldelsen."
           },
           "ratingLabel": {
             "type": "number",
@@ -2412,7 +2437,8 @@
             "format": "double"
           },
           "comment": {
-            "type": "string"
+            "type": "string",
+            "description": "Fritekst om ølet."
           },
           "createdAt": {
             "type": "string",
@@ -2443,6 +2469,7 @@
       },
       "PasswordChangeRequest": {
         "type": "object",
+        "description": "En forespørsel om å endre passord.",
         "properties": {
           "id": {
             "type": "string",
@@ -2463,19 +2490,24 @@
       },
       "BeerStyle": {
         "type": "object",
+        "description": "En ølstil.",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Identifikator for ølstilen."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Navn på ølstilen.",
+            "example": "Stout"
           }
         },
         "required": ["name"]
       },
       "Device": {
         "type": "object",
+        "description": "En registrert enhet og tilhørende bruker.",
         "properties": {
           "id": {
             "type": "string",
@@ -2486,9 +2518,6 @@
           },
           "mobileModel": {
             "type": "string"
-          },
-          "isMobile": {
-            "type": "boolean"
           },
           "osName": {
             "type": "string"
@@ -2504,13 +2533,15 @@
           },
           "user": {
             "$ref": "#/components/schemas/UserWithoutChildren"
+          },
+          "mobile": {
+            "type": "boolean"
           }
         },
         "required": [
           "browserName",
           "browserVersion",
           "id",
-          "isMobile",
           "mobileModel",
           "mobileVendor",
           "osName",
@@ -2520,10 +2551,12 @@
       },
       "Direction": {
         "type": "string",
+        "description": "Retningen en kalenderplassering skal flyttes.",
         "enum": ["UP", "DOWN"]
       },
       "RegisterRequest": {
         "type": "object",
+        "description": "Informasjon som brukes til å registrere en bruker.",
         "properties": {
           "calendarToken": {
             "type": "string"
@@ -2532,39 +2565,47 @@
             "type": "string"
           },
           "middleName": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens mellomnavn."
           },
           "lastName": {
             "type": "string"
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens e-postadresse.",
+            "example": "bruker@example.com"
           },
           "password": {
             "type": "string"
           },
           "area": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens område."
           }
-        },
-        "required": ["calendarToken", "email", "firstName", "lastName", "password"]
+        }
       },
       "AuthenticationResponse": {
         "type": "object",
+        "description": "Resultatet av en autentiseringsforespørsel.",
         "properties": {
           "token": {
-            "type": "string"
+            "type": "string",
+            "description": "Autentiseringstoken."
           },
           "user": {
-            "$ref": "#/components/schemas/User"
+            "$ref": "#/components/schemas/User",
+            "description": "Den autentiserte brukeren."
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Melding om autentiseringen."
           }
         }
       },
       "GoogleAuthenticationRequest": {
         "type": "object",
+        "description": "Autentiserings- og brukeropplysninger fra Google.",
         "properties": {
           "credential": {
             "type": "string"
@@ -2579,13 +2620,14 @@
             "type": "string"
           },
           "picture": {
-            "type": "string"
+            "type": "string",
+            "description": "Adresse til brukerens profilbilde."
           }
-        },
-        "required": ["credential", "email", "familyName", "givenName"]
+        }
       },
       "FacebookAuthenticationRequest": {
         "type": "object",
+        "description": "Brukeropplysninger fra Facebook.",
         "properties": {
           "id": {
             "type": "string"
@@ -2594,7 +2636,8 @@
             "type": "string"
           },
           "middleName": {
-            "type": "string"
+            "type": "string",
+            "description": "Brukerens mellomnavn."
           },
           "lastName": {
             "type": "string"
@@ -2603,21 +2646,24 @@
             "type": "string"
           },
           "picture": {
-            "$ref": "#/components/schemas/FacebookPicture"
+            "$ref": "#/components/schemas/FacebookPicture",
+            "description": "Brukerens profilbilde."
           }
-        },
-        "required": ["email", "firstName", "id", "lastName"]
+        }
       },
       "FacebookPicture": {
         "type": "object",
+        "description": "Profilbilde fra Facebook.",
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/FacebookPictureData"
+            "$ref": "#/components/schemas/FacebookPictureData",
+            "description": "Informasjon om profilbildet."
           }
         }
       },
       "FacebookPictureData": {
         "type": "object",
+        "description": "Adresse og dimensjoner for et Facebook-profilbilde.",
         "properties": {
           "url": {
             "type": "string"
@@ -2630,18 +2676,14 @@
             "type": "integer",
             "format": "int32"
           },
-          "isSilhouette": {
-            "type": "boolean"
-          },
           "silhouette": {
-            "type": "boolean",
-            "writeOnly": true
+            "type": "boolean"
           }
-        },
-        "required": ["height", "isSilhouette", "url", "width"]
+        }
       },
       "AuthenticationRequest": {
         "type": "object",
+        "description": "Innloggingsinformasjon med e-postadresse og passord.",
         "properties": {
           "email": {
             "type": "string"
@@ -2654,6 +2696,7 @@
       },
       "AddTokenRequest": {
         "type": "object",
+        "description": "Forespørsel om å legge til et kalendertoken for en bruker.",
         "properties": {
           "email": {
             "type": "string"
@@ -2678,8 +2721,11 @@
           "accountNonLocked": {
             "type": "boolean"
           },
-          "username": {
-            "type": "string"
+          "accountNonExpired": {
+            "type": "boolean"
+          },
+          "credentialsNonExpired": {
+            "type": "boolean"
           },
           "authorities": {
             "type": "array",
@@ -2687,14 +2733,11 @@
               "$ref": "#/components/schemas/GrantedAuthority"
             }
           },
-          "password": {
+          "username": {
             "type": "string"
           },
-          "accountNonExpired": {
-            "type": "boolean"
-          },
-          "credentialsNonExpired": {
-            "type": "boolean"
+          "password": {
+            "type": "string"
           },
           "enabled": {
             "type": "boolean"
@@ -2703,6 +2746,7 @@
       },
       "ReviewWithUser": {
         "type": "object",
+        "description": "En anmeldelse med bruker, øl og kalender.",
         "properties": {
           "id": {
             "type": "string",
@@ -2733,7 +2777,8 @@
             "format": "double"
           },
           "comment": {
-            "type": "string"
+            "type": "string",
+            "description": "Fritekst om ølet."
           },
           "createdAt": {
             "type": "string",
@@ -2758,11 +2803,8 @@
           "calendar",
           "createdAt",
           "id",
-          "ratingFeel",
-          "ratingLabel",
           "ratingLooks",
           "ratingOverall",
-          "ratingSmell",
           "ratingTaste",
           "total",
           "user"
@@ -2770,6 +2812,7 @@
       },
       "ReviewData": {
         "type": "object",
+        "description": "Anmeldelser for en kalender og en gjennomsnittsanmeldelse.",
         "properties": {
           "reviews": {
             "type": "array",
@@ -2789,6 +2832,7 @@
       },
       "DashboardData": {
         "type": "object",
+        "description": "Status og nøkkeltall for administrasjonspanelet.",
         "properties": {
           "backendVersion": {
             "type": "string"
@@ -2860,7 +2904,8 @@
             "format": "int32"
           },
           "newestBeer": {
-            "$ref": "#/components/schemas/Beer"
+            "$ref": "#/components/schemas/Beer",
+            "description": "Det sist opprettede ølet, hvis det finnes."
           }
         },
         "required": [
@@ -2886,6 +2931,7 @@
       },
       "CalendarWithBeer": {
         "type": "object",
+        "description": "En kalender med et øl og dets kalenderdag.",
         "properties": {
           "id": {
             "type": "string",
@@ -2926,6 +2972,7 @@
       },
       "BeerWithCalendarDayAndReview": {
         "type": "object",
+        "description": "Et øl med kalenderdag, brygger og eventuell anmeldelse.",
         "properties": {
           "beer": {
             "$ref": "#/components/schemas/Beer"
@@ -2941,19 +2988,22 @@
             "format": "int32"
           },
           "review": {
-            "$ref": "#/components/schemas/Review"
+            "$ref": "#/components/schemas/Review",
+            "description": "Anmeldelsen av ølet."
           }
         },
         "required": ["beer", "brewer", "calendar", "day"]
       },
       "BeerWithCalendarAndDay": {
         "type": "object",
+        "description": "Et øl med brygger, kalenderdag og eventuell kalender.",
         "properties": {
           "beer": {
             "$ref": "#/components/schemas/Beer"
           },
           "calendar": {
-            "$ref": "#/components/schemas/Calendar"
+            "$ref": "#/components/schemas/Calendar",
+            "description": "Kalenderen ølet er plassert i."
           },
           "brewer": {
             "$ref": "#/components/schemas/UserWithoutChildren"

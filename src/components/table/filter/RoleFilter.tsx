@@ -1,33 +1,36 @@
+import type { RowData } from "@tanstack/react-table";
 import { useAppSelector } from "@/redux/hooks";
 import { RoleName } from "@/types/generated";
 import TextFunction from "@/types/TextFunction";
 import { getRoleDescription } from "@/utils";
-import { Column } from "@tanstack/react-table";
-import { FC, MouseEvent } from "react";
+import { Column } from "@/components/table/tableTypes";
+import { MouseEvent } from "react";
 
-interface Props {
+const toggleRole = <T extends RowData>(
+  e: MouseEvent<HTMLInputElement>,
+  columnFilterValueValue: string,
+  columnValue: Column<T>,
+  roleValue: RoleName,
+) => {
+  // @ts-ignore
+  const { checked } = e.target;
+  const existingValues = columnFilterValueValue.split(",");
+
+  return columnValue.setFilterValue(
+    (checked ? [...existingValues, roleValue] : existingValues.filter((s) => s !== roleValue)).join(","),
+  );
+};
+
+interface Props<T extends RowData> {
   t: TextFunction;
-  column: Column<any>;
+  column: Column<T>;
+  filterValue?: unknown;
 }
 
-const RoleFilter: FC<Props> = ({ t, column }) => {
+const RoleFilter = <T extends RowData>({ t, column, filterValue: columnFilterValue }: Props<T>) => {
   const { currentUser } = useAppSelector((state) => state.authState);
   const role = currentUser?.role?.name;
-  const columnFilterValue = column.getFilterValue();
-  const toggleRole = (
-    e: MouseEvent<HTMLInputElement>,
-    columnFilterValue: string,
-    column: Column<any>,
-    role: RoleName,
-  ) => {
-    // @ts-ignore
-    const { checked } = e.target;
-    const existingValues = columnFilterValue.split(",");
 
-    return column.setFilterValue(
-      (checked ? [...existingValues, role] : existingValues.filter((s) => s !== role)).join(","),
-    );
-  };
   if (!role || role === RoleName.ROLE_USER) {
     return null;
   }

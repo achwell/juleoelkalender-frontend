@@ -1,5 +1,5 @@
 import TabPanel from "@/components/tabs/TabPanel";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { FC, PropsWithChildren, useState } from "react";
 
 interface TabProps extends PropsWithChildren {

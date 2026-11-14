@@ -1,5 +1,6 @@
 import H2 from "@/components/layout/H2";
-import { useAppSelector } from "@/redux/hooks";
+import type Exchange from "@/types/dashboard/Exchange";
+import { useMemo } from "react";
 import { getBackgroundColor, processExchanges } from "@/utils/graphUtils";
 import {
   BarElement,
@@ -17,11 +18,12 @@ import { useTranslation } from "react-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const HttpExchanges = () => {
-  const { t } = useTranslation();
-  const { httpexchanges } = useAppSelector((state) => state.dashboardState);
+const EMPTY_EXCHANGES: Exchange[] = [];
 
-  const { uris, statusCodes, counts } = processExchanges(httpexchanges);
+const HttpExchanges = ({ exchanges = EMPTY_EXCHANGES }: { exchanges?: Exchange[] }) => {
+  const { t } = useTranslation();
+
+  const { uris, statusCodes, counts } = useMemo(() => processExchanges(exchanges), [exchanges]);
 
   const data: ChartData<"bar"> = {
     labels: uris,

@@ -9,7 +9,7 @@ import { Review } from "@/types/generated";
 import { handleErrorWithStatus } from "@/utils";
 import { Resolver } from "@hookform/resolvers/ajv";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -34,20 +34,35 @@ interface ReviewProps {
 const ReviewForm: FC<Props> = ({ review, callback, from }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [
-    addReview,
-    { isLoading: isAdding, isSuccess: isSuccessAdding, data: newReview, isError: isErrorAdding, error: errorAdding },
-  ] = useAddReviewMutation();
-  const [
-    updateReview,
-    {
-      isLoading: isUppdating,
-      isSuccess: isSuccessUppdating,
-      data: updatedReview,
-      isError: isErrorUppdating,
-      error: errorUppdating,
-    },
-  ] = useUpdateReviewMutation();
+  const [addReviewRequest, { isLoading: isAdding }] = useAddReviewMutation();
+  const addReview = async (...args: Parameters<typeof addReviewRequest>) => {
+    const result = await addReviewRequest(...args);
+
+    if ("data" in result && result.data) {
+      toast.success(t("add.added", { field: t("pages.calendar.review.vote") }));
+      callback?.();
+      navigate(from ?? `/calendar/${review.calendar.id}`);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const [updateReviewRequest, { isLoading: isUppdating }] = useUpdateReviewMutation();
+  const updateReview = async (...args: Parameters<typeof updateReviewRequest>) => {
+    const result = await updateReviewRequest(...args);
+
+    if ("data" in result && result.data) {
+      toast.success(t("update.updated", { field: t("pages.calendar.review.vote") }));
+      callback?.();
+      navigate(from ?? `/calendar/${review.calendar.id}`);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
 
   const schema = reviewWithoutChildrenSchema(t);
   // @ts-ignore
@@ -58,36 +73,6 @@ const ReviewForm: FC<Props> = ({ review, callback, from }) => {
     resolver: resolver,
   });
   const { handleSubmit } = methods;
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isAdding) {
-        if (isSuccessAdding && newReview) {
-          toast.success(t("add.added", { field: t("pages.calendar.review.vote") }));
-          callback?.();
-          navigate(from ?? `/calendar/${review.calendar.id}`);
-        } else if (isErrorAdding && errorAdding) {
-          handleErrorWithStatus(t, errorAdding);
-        }
-      }
-    };
-    finish();
-  }, [isAdding, isSuccessAdding, isErrorAdding]);
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isUppdating) {
-        if (isSuccessUppdating && updatedReview) {
-          toast.success(t("update.updated", { field: t("pages.calendar.review.vote") }));
-          callback?.();
-          navigate(from ?? `/calendar/${review.calendar.id}`);
-        } else if (isErrorUppdating && errorUppdating) {
-          handleErrorWithStatus(t, errorUppdating);
-        }
-      }
-    };
-    finish();
-  }, [isUppdating, isSuccessUppdating, isErrorUppdating]);
 
   const onSubmit = async (submitData: ReviewProps) => {
     const data = {

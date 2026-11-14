@@ -1,5 +1,5 @@
 import FormInputProps from "@/types/FormInputProps";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { JSX } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -22,40 +22,40 @@ const InputNumber = <TFormValues extends Record<string, unknown>>({
   return (
     <Controller
       render={({ field, fieldState }) => {
-        const { ref, name, onChange, value, onBlur } = field;
+        const { ref, name: nameValue, onChange, value, onBlur } = field;
         const { error } = fieldState;
         const errorMessages = error ? (validateErrorMessage ?? error.message) : undefined;
 
         const extraOnChange = (e: any) => {
-          const value = e.target.value;
-          const numValue = value ? +value : undefined;
+          const valueValue = e.target.value;
+          const numValue = valueValue ? +valueValue : undefined;
 
           if (required && numValue === undefined) {
-            setError(name, { message: t("validation.required", { field: label, number: min }) });
+            setError(nameValue, { message: t("validation.required", { field: label, number: min }) });
           } else {
-            setError(name, { message: undefined });
+            setError(nameValue, { message: undefined });
           }
 
           if (numValue) {
             if (min !== undefined) {
               if (numValue < min) {
-                setError(name, { message: t("validation.minvalue", { field: label, number: min }) });
+                setError(nameValue, { message: t("validation.minvalue", { field: label, number: min }) });
               }
             }
             if (max !== undefined) {
               if (numValue > max) {
-                setError(name, { message: t("validation.maxvalue", { field: label, number: max }) });
+                setError(nameValue, { message: t("validation.maxvalue", { field: label, number: max }) });
               }
             }
           }
           onChange(numValue);
-          setValue(name, value);
+          setValue(nameValue, valueValue);
         };
         return (
           <div className="relative">
             {!startAdornment && (
               <label
-                htmlFor={name}
+                htmlFor={nameValue}
                 className={clsx(
                   "block text-sm font-medium",
                   { "text-gray-400": disabled },
@@ -69,8 +69,8 @@ const InputNumber = <TFormValues extends Record<string, unknown>>({
               {startAdornment && <span className="absolute left-3 text-gray-500">{label}</span>}
               <input
                 {...field}
-                id={name}
-                name={name}
+                id={nameValue}
+                name={nameValue}
                 ref={ref}
                 type="number"
                 value={value}

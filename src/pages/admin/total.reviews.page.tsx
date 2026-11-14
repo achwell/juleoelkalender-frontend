@@ -4,28 +4,22 @@ import Paragraph from "@/components/layout/Paragraph";
 import TotalReviews from "@/components/tables/TotalReviews";
 import { useGetReviewsQuery } from "@/redux/api/reviewApi";
 import { useAppSelector } from "@/redux/hooks";
-import { ReviewWithUser } from "@/types/generated";
 import { hasAuthority } from "@/utils";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 const TotalReviewsPage = () => {
   const { data, isFetching } = useGetReviewsQuery();
-  const [reviews, setReviews] = useState<ReviewWithUser[]>([]);
   const { currentUser } = useAppSelector((state) => state.authState);
   const { t } = useTranslation();
-  useEffect(() => {
-    if (!isFetching && data && currentUser) {
-      if (hasAuthority(currentUser, "review:total")) {
-        setReviews(data);
-      } else {
-        setReviews(data.filter((r) => r.beer.brewer.id === currentUser.id));
-      }
-    }
-  }, [data, currentUser, isFetching]);
+  const reviews =
+    currentUser && data
+      ? hasAuthority(currentUser, "review:total")
+        ? data
+        : data.filter((r) => r.beer.brewer.id === currentUser.id)
+      : [];
 
-  if (isFetching ?? !data) {
+  if (isFetching || !data) {
     return <FullScreenLoader />;
   }
 

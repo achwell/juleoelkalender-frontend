@@ -4,7 +4,7 @@ import Table from "@/components/table/Table";
 import { useGetBeersWithCalendarQuery } from "@/redux/api/beerApi";
 import BeerWithCalendar from "@/types/BeerWithCalendar";
 import { ButtonType } from "@/types/ButtonProps";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/components/table/tableTypes";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
@@ -66,6 +66,6 @@ const MyCalendarsTable = () => {
   if (!mybeers || !columns) {
     return <FullScreenLoader />;
   }
-  return <Table data={mybeers} cols={columns} />;
+  return <Table data={mybeers} columns={columns} />;
 };
 export default MyCalendarsTable;

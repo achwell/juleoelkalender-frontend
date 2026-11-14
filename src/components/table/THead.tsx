@@ -1,13 +1,13 @@
 import TableHeader from "@/components/table/TableHeader";
-import { HeaderGroup, RowData } from "@tanstack/react-table";
-import { FC } from "react";
+import { RowData } from "@tanstack/react-table";
+import { HeaderGroup } from "@/components/table/tableTypes";
 
-interface Props {
-  headerGroups: HeaderGroup<RowData>[];
+interface Props<T extends RowData> {
+  headerGroups: HeaderGroup<T>[];
   small: boolean;
 }
 
-const THead: FC<Props> = ({ headerGroups, small }) => {
+const THead = <T extends RowData>({ headerGroups, small }: Props<T>) => {
   return (
     <thead className="bg-gray-100">
       {headerGroups.map((headerGroup) => (

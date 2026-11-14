@@ -7,8 +7,8 @@ import { useAppSelector } from "@/redux/hooks";
 import ButtonProps from "@/types/ButtonProps";
 import { Beer, BeerCalendar, Calendar, CalendarWithBeer } from "@/types/generated";
 import { handleErrorWithStatus } from "@/utils";
-import { createColumnHelper } from "@tanstack/react-table";
-import { FC, useEffect, useState } from "react";
+import { createColumnHelper } from "@/components/table/tableTypes";
+import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -23,32 +23,30 @@ const CalendarBeersTable: FC<{
 }> = ({ data, allBeers, allBeerCalendars, buttons, calendar, refreshData, moveBeerCalendars }) => {
   const { t } = useTranslation();
   const { currentUser } = useAppSelector((state) => state.authState);
-  const [
-    deleteBeerCalendar,
-    { isLoading: isDeletingBeerCalendar, isSuccess: isSuccessDeleting, isError: isErrorDeleting, error: errorDeleting },
-  ] = useDeleteBeerCalendarMutation();
+  const [deleteBeerCalendarRequest, { isLoading: isDeletingBeerCalendar }] = useDeleteBeerCalendarMutation();
+  const deleteBeerCalendar = async (...args: Parameters<typeof deleteBeerCalendarRequest>) => {
+    const result = await deleteBeerCalendarRequest(...args);
+
+    if ("data" in result) {
+      setShowDeleteDialog(false);
+      refreshData().then(() => {
+        toast.success(
+          t("pages.calendar.admin.beerremoved", {
+            beer: beer?.name,
+            year: calendar?.year,
+            calendar: calendar?.name,
+          }),
+        );
+      });
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [beer, setBeer] = useState<Beer>();
-
-  useEffect(() => {
-    if (isDeletingBeerCalendar) {
-      if (isSuccessDeleting) {
-        setShowDeleteDialog(false);
-        refreshData().then(() => {
-          toast.success(
-            t("pages.calendar.admin.beerremoved", {
-              beer: beer?.name,
-              year: calendar?.year,
-              calendar: calendar?.name,
-            }),
-          );
-        });
-      } else if (isErrorDeleting && errorDeleting) {
-        handleErrorWithStatus(t, errorDeleting);
-      }
-    }
-  }, [isDeletingBeerCalendar]);
 
   const deleteBeer = async () => {
     if (calendar && beer && allBeerCalendars) {
@@ -166,7 +164,7 @@ const CalendarBeersTable: FC<{
       />
       <Table
         data={data}
-        cols={columns}
+        columns={columns}
         defaultPagination={{ pageSize: 24, pageIndex: 0 }}
         actionButtons={<ActionKnapper buttons={buttons} />}
       />

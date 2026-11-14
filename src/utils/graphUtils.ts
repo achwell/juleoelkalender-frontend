@@ -1,3 +1,5 @@
+import type Device from "@/types/dashboard/Device";
+import type ChartData from "@/types/dashboard/ChartData";
 import { BASE_URL } from "@/environment";
 import Exchange from "@/types/dashboard/Exchange";
 
@@ -41,14 +43,40 @@ export const processExchanges = (exs: Exchange[]): ProcessedData => {
 
   const counts: { [status: number]: number[] } = {};
   for (const status of statusCodes) {
-    counts[status] = uris.map((_) => 0);
+    counts[status] = Array<number>(uris.length).fill(0);
   }
+
+  const uriIndexes = new Map(uris.map((uri, index) => [uri, index]));
 
   exs.forEach(({ request: { uri }, response: { status } }) => {
     const url = uri.replace(BASE_URL, "").replace("/api/v1", "");
-    const uriIndex = uris.indexOf(url);
+    const uriIndex = uriIndexes.get(url)!;
     counts[status][uriIndex] += 1;
   });
 
   return { uris, statusCodes, counts };
+};
+
+const increment = (counts: Map<string, number>, key: string | undefined) => {
+  if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
+};
+
+const toChartData = (counts: Map<string, number>): ChartData[] =>
+  Array.from(counts, ([name, value]) => ({ name, value }));
+
+// Map insertion order preserves the order in which categories first appear.
+export const groupDevices = (devices: Device[], mobileLabel: string, desktopLabel: string) => {
+  const browsers = new Map<string, number>();
+  const platforms = new Map<string, number>();
+  const systems = new Map<string, number>();
+  for (const device of devices) {
+    increment(browsers, device.browserName);
+    increment(platforms, device.isMobile ? mobileLabel : desktopLabel);
+    increment(systems, device.osName);
+  }
+  return {
+    browserChartData: toChartData(browsers),
+    mobileChartData: toChartData(platforms),
+    osChartData: toChartData(systems),
+  };
 };

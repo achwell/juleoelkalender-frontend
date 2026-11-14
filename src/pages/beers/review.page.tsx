@@ -51,12 +51,7 @@ const BeerReviewsPage = () => {
         />
       )}
       {reviews.map((item) => (
-        <ReviewTable
-          key={`${item.calendar.id}${Math.random().toString(36)}`}
-          calendar={item.calendar}
-          reviews={item.reviews}
-          average={item.average}
-        />
+        <ReviewTable key={item.calendar.id} calendar={item.calendar} reviews={item.reviews} average={item.average} />
       ))}
     </>
   );

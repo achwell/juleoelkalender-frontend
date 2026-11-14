@@ -10,7 +10,7 @@ import { ButtonType } from "@/types/ButtonProps";
 import { handleErrorWithStatus } from "@/utils";
 import { parseISO } from "date-fns";
 import { format } from "date-fns-tz";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
@@ -24,50 +24,40 @@ const BeerDetailsPage = () => {
 
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.authState);
-  const {
-    data: beer,
-    isFetching,
-    refetch,
-  } = useGetBeerQuery(Array.isArray(id) ? id[0] : (id as string), {
+  const { data: beer, isFetching } = useGetBeerQuery(Array.isArray(id) ? id[0] : (id as string), {
     skip: !(Array.isArray(id) ? id[0] : (id as string)),
   });
   const { data: beerCalendars, isFetching: isFetchingGetBeerCalendars } = useGetBeerCalendarsQuery();
-  const [deleteBeer, { isLoading: isDeleting, isSuccess: isSuccessDelete, isError, error }] = useDeleteBeerMutation();
+  const [deleteBeerRequest, { isLoading: isDeleting }] = useDeleteBeerMutation();
+  const deleteBeer = async (...args: Parameters<typeof deleteBeerRequest>) => {
+    const result = await deleteBeerRequest(...args);
+
+    if (currentUser) {
+      if ("data" in result && beer) {
+        if (beer.brewer.id === currentUser.id) {
+          const beers = currentUser.beers.filter((b) => b.id !== beer.id);
+          dispatch(setCurrentUser({ ...currentUser, beers }));
+        }
+        toast.success(t("delete.deleted", { name: beer.name }));
+        setShowDeleteDialog(false);
+        navigate(from ?? "/beers");
+      } else if ("error" in result && result.error) {
+        handleErrorWithStatus(t, result.error);
+      }
+    }
+
+    return result;
+  };
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
+  const canDelete = !!beer && !!beerCalendars && !beerCalendars.some((bc) => bc.beer.id === beer.id);
   const brewedDate = typeof beer?.brewedDate === "string" ? parseISO(beer?.brewedDate) : beer?.brewedDate;
   const bottleDate = typeof beer?.bottleDate === "string" ? parseISO(beer?.bottleDate) : beer?.bottleDate;
-
-  useEffect(() => {
-    if (beerCalendars && beer) {
-      setCanDelete(!beerCalendars.map((bc) => bc.beer.id).includes(beer.id));
-    }
-  }, [beer, beerCalendars]);
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!!currentUser && !isDeleting) {
-        if (isSuccessDelete && beer) {
-          if (beer.brewer.id === currentUser.id) {
-            const beers = currentUser.beers.filter((b) => b.id !== beer.id);
-            dispatch(setCurrentUser({ ...currentUser, beers }));
-          }
-          toast.success(t("delete.deleted", { name: beer.name }));
-          refetch();
-        } else if (isError && error) {
-          handleErrorWithStatus(t, error);
-        }
-      }
-    };
-    finish();
-  }, [id, currentUser]);
 
   const remove = () => {
     if (!beer) {
       return;
     }
-    setShowDeleteDialog(false);
-    navigate(from ?? "/beers");
     deleteBeer(beer.id);
   };
 

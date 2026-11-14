@@ -5,7 +5,7 @@ import { useUpdateUserMutation } from "@/redux/api/userApi";
 import { useAppSelector } from "@/redux/hooks";
 import { User } from "@/types/generated";
 import { getNameOfUser, handleErrorWithStatus, hasAuthority } from "@/utils";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -22,34 +22,27 @@ const UsersTable: FC<Props> = ({ users, viewUser, showDeleteUser, showAddUser, c
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentUser } = useAppSelector((state) => state.authState);
-  const [updateUser, { isLoading, isSuccess, data, isError, error }] = useUpdateUserMutation();
-  const [canSeeLastLogin, setCanSeeLastLogin] = useState(false);
-  const [activeOnly, setActiveOnly] = useState(true);
+  const [updateUserRequest] = useUpdateUserMutation();
+  const updateUser = async (...args: Parameters<typeof updateUserRequest>) => {
+    const result = await updateUserRequest(...args);
 
-  useEffect(() => {
-    if (currentUser) {
-      setCanSeeLastLogin(hasAuthority(currentUser, "user:seelogintime"));
+    if ("data" in result && result.data) {
+      toast.success(
+        t("pages.users.wasunlocked", {
+          name: getNameOfUser(result.data),
+        }),
+      );
+      callback();
+      navigate("/admin/users");
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
     }
-  }, [currentUser]);
 
-  useEffect(() => {
-    const finish = async () => {
-      if (!isLoading) {
-        if (isSuccess && data) {
-          toast.success(
-            t("pages.users.wasunlocked", {
-              name: getNameOfUser(data),
-            }),
-          );
-          callback();
-          navigate("/admin/users");
-        } else if (isError && error) {
-          handleErrorWithStatus(t, error);
-        }
-      }
-    };
-    finish();
-  }, [isLoading]);
+    return result;
+  };
+
+  const canSeeLastLogin = !!currentUser && hasAuthority(currentUser, "user:seelogintime");
+  const [activeOnly, setActiveOnly] = useState(true);
 
   const unlock = (user: User) => {
     updateUser({
@@ -70,7 +63,7 @@ const UsersTable: FC<Props> = ({ users, viewUser, showDeleteUser, showAddUser, c
     <div className="w-full p-4">
       <Table
         data={users.filter(activeFilter)}
-        cols={columns(t, users, canSeeLastLogin, currentUser, viewUser, showDeleteUser, unlock)}
+        columns={columns(t, users, canSeeLastLogin, currentUser, viewUser, showDeleteUser, unlock)}
         actionButtons={
           <UsersTableActionButtons showAddUser={showAddUser} setActiveOnly={setActiveOnly} activeOnly={activeOnly} />
         }

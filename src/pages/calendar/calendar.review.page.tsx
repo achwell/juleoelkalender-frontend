@@ -71,7 +71,7 @@ const CalendarReviewPage = () => {
     if (redirect) {
       navigate("/login");
     }
-  }, [isErrorBeer, isErrorCalendar, isErrorReview, errorBeer, errorCalendar, errorReview]);
+  }, [isErrorBeer, isErrorCalendar, isErrorReview, errorBeer, errorCalendar, errorReview, t, navigate]);
 
   const refresh = async () => {
     refetchBeer();

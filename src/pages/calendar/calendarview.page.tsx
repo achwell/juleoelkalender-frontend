@@ -6,8 +6,7 @@ import Paragraph from "@/components/layout/Paragraph";
 import { useGetBeersWithReviewByCalendarAndUserQuery } from "@/redux/api/beerApi";
 import { useGetCalendarQuery } from "@/redux/api/calendarApi";
 import { useAppSelector } from "@/redux/hooks";
-import BeerDetails from "@/types/BeerDetails";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
@@ -18,35 +17,25 @@ const CalendarViewPage = () => {
 
   const { currentUser } = useAppSelector((state) => state.authState);
 
-  const { data: allBeers, isFetching: isFetchingBeers } = useGetBeersWithReviewByCalendarAndUserQuery(
+  const { data: allBeers } = useGetBeersWithReviewByCalendarAndUserQuery(
     { calendarId: calendarId || "", userId: currentUser?.id || "" },
     { skip: !calendarId || !currentUser },
   );
-  const [beers, setBeers] = useState<BeerDetails[]>([]);
 
   const { data: calendar } = useGetCalendarQuery(calendarId ?? "");
 
-  useEffect(() => {
-    if (calendar && allBeers && currentUser) {
-      const calendarBeers = allBeers
-        .map((beer) => ({
-          calendarId: beer.calendar.id!,
-          day: beer.day,
-          beer: beer.beer,
-          review: beer.review,
+  const beers = useMemo(
+    () =>
+      (allBeers ?? [])
+        .map((entry) => ({
+          calendarId: entry.calendar.id!,
+          day: entry.day,
+          beer: entry.beer,
+          review: entry.review,
         }))
-        .toSorted((a, b) => {
-          if (a.day > b.day) {
-            return 1;
-          }
-          if (b.day > a.day) {
-            return -1;
-          }
-          return 0;
-        });
-      setBeers(calendarBeers);
-    }
-  }, [calendar, allBeers, isFetchingBeers]);
+        .toSorted((a, b) => a.day - b.day),
+    [allBeers],
+  );
 
   if (!calendar || !currentUser || !beers) {
     return <FullScreenLoader />;

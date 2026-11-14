@@ -12,7 +12,7 @@ import { Calendar } from "@/types/generated";
 import { handleErrorWithStatus, hasAuthority } from "@/utils";
 import { Resolver } from "@hookform/resolvers/ajv";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -40,60 +40,58 @@ const CalendarForm: FC<Props> = ({ calendar, existingCalendars = [], callback })
   });
   const { handleSubmit } = methods;
 
-  const [addCalendar, { isLoading: isAdding, isSuccess: isSuccessAdding, isError: isErrorAdding, error: errorAdding }] =
-    useAddCalendarMutation();
-  const [
-    deleteCalendar,
-    { isLoading: isDeleting, isSuccess: isSuccessDeleting, isError: isErrorDeleting, error: errorDeleting },
-  ] = useDeleteCalendarMutation();
-  const [
-    updateCalendar,
-    { isLoading: isUpdating, isSuccess: isSuccessUpdating, isError: isErrorUpdating, error: errorUpdating },
-  ] = useUpdateCalendarMutation();
+  const [addCalendarRequest, { isLoading: isAdding }] = useAddCalendarMutation();
+  const addCalendar = async (...args: Parameters<typeof addCalendarRequest>) => {
+    const result = await addCalendarRequest(...args);
+
+    if ("data" in result) {
+      toast.success(t("calendarform.created", { name: calendar.name }));
+      if (callback) {
+        callback();
+      }
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const [deleteCalendarRequest, { isLoading: isDeleting }] = useDeleteCalendarMutation();
+  const deleteCalendar = async (...args: Parameters<typeof deleteCalendarRequest>) => {
+    const result = await deleteCalendarRequest(...args);
+
+    if ("data" in result) {
+      deletedOK();
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const [updateCalendarRequest, { isLoading: isUpdating }] = useUpdateCalendarMutation();
+  const updateCalendar = async (...args: Parameters<typeof updateCalendarRequest>) => {
+    const result = await updateCalendarRequest(...args);
+
+    if ("data" in result) {
+      toast.success(t("calendarform.updated", { name: calendar.name }));
+      if (callback) {
+        callback();
+      }
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  useEffect(() => {
-    if (!isAdding) {
-      if (isSuccessAdding) {
-        toast.success(t("calendarform.created", { name: calendar.name }));
-        if (callback) {
-          callback();
-        }
-      } else if (isErrorAdding && errorAdding) {
-        handleErrorWithStatus(t, errorAdding);
-      }
-    }
-  }, [isAdding, isSuccessAdding, isErrorAdding, errorAdding, calendar.name, callback]);
 
   const deletedOK = async () => {
     setShowDeleteDialog(false);
     toast.success(t("calendarform.deleted", { year: calendar.year, name: calendar.name }));
     navigate("/calendar");
   };
-
-  useEffect(() => {
-    if (!isDeleting) {
-      if (isSuccessDeleting) {
-        deletedOK();
-      } else if (isErrorDeleting && errorDeleting) {
-        handleErrorWithStatus(t, errorDeleting);
-      }
-    }
-  }, [isDeleting, isSuccessDeleting, isErrorDeleting, errorDeleting, deletedOK]);
-
-  useEffect(() => {
-    if (!isUpdating) {
-      if (isSuccessUpdating) {
-        toast.success(t("calendarform.updated", { name: calendar.name }));
-        if (callback) {
-          callback();
-        }
-      } else if (isErrorUpdating && errorUpdating) {
-        handleErrorWithStatus(t, errorUpdating);
-      }
-    }
-  }, [isUpdating, isSuccessUpdating, isErrorUpdating, errorUpdating, calendar.name, callback]);
 
   const onSubmit = async (data: Calendar) => {
     const { id, year, name, archived, published, calendarToken, beerCalendars } = data;

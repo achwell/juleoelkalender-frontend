@@ -14,11 +14,12 @@ import { ButtonType } from "@/types/ButtonProps";
 import { RoleName, User } from "@/types/generated";
 import { getNameOfUser, getRoleDescription, handleErrorWithStatus, hasAuthority, isUserSystemAdmin } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FC } from "react";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import type { z } from "zod";
 
 interface Props {
   user: User;
@@ -27,22 +28,7 @@ interface Props {
   from: string;
 }
 
-interface UserInput {
-  id?: string;
-  firstName: string;
-  middleName?: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  area?: string;
-  roleName: RoleName;
-  locked: boolean;
-  lastLoginDate?: Date;
-  facebookUserId?: string;
-  showPassword: boolean;
-  token: string;
-}
+type UserInput = z.infer<ReturnType<typeof userSchema>>;
 
 const ikkebyttpassord = "IKKEBYTTPASSORD";
 const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
@@ -51,20 +37,47 @@ const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.authState);
 
-  const [
-    addUser,
-    { isLoading: isAdding, isSuccess: isSuccessAdd, data: newUser, isError: isAddError, error: addError },
-  ] = useAddUserMutation();
-  const [
-    updateUser,
-    {
-      isLoading: isUpdating,
-      isSuccess: isSuccessUpdate,
-      data: updatedUser,
-      isError: isUpdateError,
-      error: updateError,
-    },
-  ] = useUpdateUserMutation();
+  const [addUserRequest] = useAddUserMutation();
+  const addUser = async (...args: Parameters<typeof addUserRequest>) => {
+    const result = await addUserRequest(...args);
+
+    if ("data" in result && result.data) {
+      toast.success(
+        t("add.added", {
+          field: getNameOfUser(result.data),
+        }),
+      );
+      saveCallback?.(result.data);
+      navigate(from);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const [updateUserRequest, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const updateUser = async (...args: Parameters<typeof updateUserRequest>) => {
+    const result = await updateUserRequest(...args);
+
+    if ("data" in result && result.data) {
+      if (user && currentUser && user.id === currentUser.id) {
+        dispatch(setCurrentUser(user));
+      }
+      toast.success(
+        t("update.updated", {
+          field: getNameOfUser(result.data),
+        }),
+      );
+      saveCallback?.(result.data);
+      navigate(from);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
   const { data: calendarTokens } = useGetCalendarTokensQuery();
   const { data: allUsers } = useGetUsersQuery();
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -86,52 +99,10 @@ const UserForm: FC<Props> = ({ user, saveCallback, cancelCallback, from }) => {
   const {
     handleSubmit,
     setValue,
-    watch,
     formState: { isDirty, isValid },
     reset,
   } = methods;
-  const { roleName, showPassword } = watch();
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isAdding) {
-        if (isSuccessAdd && newUser) {
-          toast.success(
-            t("add.added", {
-              field: getNameOfUser(newUser),
-            }),
-          );
-          saveCallback?.(newUser);
-          navigate(from);
-        } else if (isAddError && addError) {
-          handleErrorWithStatus(t, addError);
-        }
-      }
-    };
-    finish();
-  }, [isAdding]);
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isUpdating) {
-        if (isSuccessUpdate && updatedUser) {
-          if (user && currentUser && user.id === currentUser.id) {
-            dispatch(setCurrentUser(user));
-          }
-          toast.success(
-            t("update.updated", {
-              field: getNameOfUser(updatedUser),
-            }),
-          );
-          saveCallback?.(updatedUser);
-          navigate(from);
-        } else if (isUpdateError && updateError) {
-          handleErrorWithStatus(t, updateError);
-        }
-      }
-    };
-    finish();
-  }, [isUpdating]);
+  const { roleName, showPassword } = useWatch({ control: methods.control });
 
   const fixPassword = (newPassword?: string, oldPassword?: string) => {
     return (newPassword === ikkebyttpassord ? oldPassword : newPassword) ?? "";

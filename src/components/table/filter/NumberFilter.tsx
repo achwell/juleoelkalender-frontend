@@ -1,15 +1,15 @@
+import type { RowData } from "@tanstack/react-table";
 import DebouncedInput from "@/components/table/filter/DebouncedInput";
 import TextFunction from "@/types/TextFunction";
-import { Column } from "@tanstack/react-table";
-import { FC } from "react";
+import { Column } from "@/components/table/tableTypes";
 
-interface Props {
+interface Props<T extends RowData> {
   t: TextFunction;
-  column: Column<any>;
+  column: Column<T>;
+  filterValue?: unknown;
 }
 
-const NumberFilter: FC<Props> = ({ t, column }) => {
-  const columnFilterValue = column.getFilterValue();
+const NumberFilter = <T extends RowData>({ t, column, filterValue: columnFilterValue }: Props<T>) => {
   return (
     <DebouncedInput
       type="number"

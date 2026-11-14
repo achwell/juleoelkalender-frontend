@@ -1,5 +1,5 @@
 import Alert, { AlertColor } from "@/components/Alert";
-import { HealthStatus } from "@/redux/features/dashboardSlice";
+import type { HealthStatusCode as HealthStatus } from "@/types/dashboard/HealthStatus";
 import { translateStatus } from "@/utils";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";

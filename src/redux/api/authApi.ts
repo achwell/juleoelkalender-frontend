@@ -1,11 +1,10 @@
-import { BASE_URL } from "@/environment";
 import FacebookLoginRequest from "@/types/externalauth/FacebookLoginRequest";
 import GoogleLoginRequest from "@/types/externalauth/GoogleLoginRequest";
 import { User } from "@/types/generated";
 import IGenericResponse from "@/types/IGenericResponse";
 import LoginInput from "@/types/LoginInput";
 import RegisterInput from "@/types/RegisterInput";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
 export interface LoginResponse {
   token: string;
@@ -14,21 +13,12 @@ export interface LoginResponse {
   user: User;
 }
 
-export const authApi = createApi({
-  reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/auth`,
-    credentials: "omit",
-    prepareHeaders: (headers) => {
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      return headers;
-    },
-  }),
+export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     registerUser: builder.mutation<IGenericResponse, RegisterInput>({
       query(data) {
         return {
-          url: "/register",
+          url: "/api/v1/auth/register",
           method: "POST",
           body: data,
           credentials: "include",
@@ -39,7 +29,7 @@ export const authApi = createApi({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       query({ showPassword, ...data }) {
         return {
-          url: "/authenticate",
+          url: "/api/v1/auth/authenticate",
           method: "POST",
           body: data,
           credentials: "include",
@@ -49,7 +39,7 @@ export const authApi = createApi({
     loginWithFacebook: builder.mutation<LoginResponse, FacebookLoginRequest>({
       query(data) {
         return {
-          url: "/facebookauthenticate",
+          url: "/api/v1/auth/facebookauthenticate",
           method: "POST",
           body: data,
           credentials: "include",
@@ -59,7 +49,7 @@ export const authApi = createApi({
     loginWithGoogle: builder.mutation<LoginResponse, GoogleLoginRequest>({
       query(data) {
         return {
-          url: "/googleauthenticate",
+          url: "/api/v1/auth/googleauthenticate",
           method: "POST",
           body: data,
           credentials: "include",
@@ -69,7 +59,7 @@ export const authApi = createApi({
     addToken: builder.mutation<void, { email: string; token: string }>({
       query(data) {
         return {
-          url: "/addtoken",
+          url: "/api/v1/auth/addtoken",
           method: "POST",
           body: data,
           credentials: "include",
@@ -79,7 +69,7 @@ export const authApi = createApi({
     userExist: builder.query<boolean, string>({
       query: (email) => {
         return {
-          url: `/userExist/${email}`,
+          url: `/api/v1/auth/userExist/${email}`,
           credentials: "include",
         };
       },

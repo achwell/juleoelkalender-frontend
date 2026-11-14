@@ -1,5 +1,5 @@
 import FormInputProps from "@/types/FormInputProps";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { JSX } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -20,7 +20,7 @@ const InputField = <TFormValues extends Record<string, unknown>>({
   return (
     <Controller
       render={({ field, fieldState }) => {
-        const { ref, name, onChange, value, onBlur } = field;
+        const { ref, name: nameValue, onChange, value, onBlur } = field;
         const { error } = fieldState;
         const errorMessages = error ? (validateErrorMessage ?? error.message) : undefined;
         const hasError = !!errorMessages;
@@ -28,7 +28,7 @@ const InputField = <TFormValues extends Record<string, unknown>>({
           <div className="relative">
             {!startAdornment && (
               <label
-                htmlFor={name}
+                htmlFor={nameValue}
                 className={clsx(
                   "block text-sm font-medium",
                   { "text-red-600": hasError },
@@ -46,7 +46,7 @@ const InputField = <TFormValues extends Record<string, unknown>>({
                 type={type}
                 disabled={disabled}
                 required={required}
-                name={name}
+                name={nameValue}
                 onChange={onChange}
                 onBlur={onBlur}
                 value={value ?? ""}

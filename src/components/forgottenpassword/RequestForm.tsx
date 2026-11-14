@@ -6,8 +6,8 @@ import requestPasswordSchema from "@/schema/requestPasswordSchema";
 import { ButtonType } from "@/types/ButtonProps";
 import { handleErrorWithStatus } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FC } from "react";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -33,31 +33,31 @@ const RequestForm: FC<{ callback: () => void }> = ({ callback }) => {
   const {
     handleSubmit,
     formState: { isDirty, isValid },
-    watch,
   } = methods;
-  const { email } = watch();
-  const [addPasswordChangeRequest, { isLoading, isSuccess, data: passwordChangeRequest, isError, error }] =
-    useAddPasswordChangeRequestMutation();
-  const { data: userExist, isFetching: isFetchingUserExist } = useUserExistQuery(email, { skip: !email });
+  const { email } = useWatch({ control: methods.control });
+  const [addPasswordChangeRequestRequest, { isLoading }] = useAddPasswordChangeRequestMutation();
+  const addPasswordChangeRequest = async (...args: Parameters<typeof addPasswordChangeRequestRequest>) => {
+    const result = await addPasswordChangeRequestRequest(...args);
+
+    if ("data" in result && result.data) {
+      handleOk();
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const { data: userExist, isFetching: isFetchingUserExist } = useUserExistQuery(email ?? "", { skip: !email });
 
   const handleOk = async () => {
     callback();
   };
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (isSuccess && passwordChangeRequest) {
-        handleOk();
-      } else if (isError && error) {
-        handleErrorWithStatus(t, error);
-      }
-    }
-  }, [isLoading]);
-
-  const onSubmit = async ({ email, token }: Props) => {
+  const onSubmit = async ({ email: emailValue, token }: Props) => {
     if (!isFetchingUserExist) {
       if (userExist) {
-        addPasswordChangeRequest({ email, token });
+        addPasswordChangeRequest({ email: emailValue, token });
       } else {
         toast.error(t("pages.forgottenpassword.usernotregistered"));
       }

@@ -16,7 +16,6 @@ import { User } from "@/types/generated";
 import { handleErrorWithStatus } from "@/utils";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { useEffect } from "react";
 import {
   browserName,
   browserVersion,
@@ -34,67 +33,44 @@ const LoginProviders = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [
-    loginWithGoogle,
-    {
-      isLoading: isLoadingGoogle,
-      isError: isErrorGoogle,
-      error: errorGoogle,
-      isSuccess: isSuccessGoogle,
-      data: loginResponseGoogle,
-    },
-  ] = useLoginWithGoogleMutation();
-  const [
-    loginWithFacebook,
-    {
-      isLoading: isLoadingFacebook,
-      isError: isErrorFacebook,
-      error: errorFacebook,
-      isSuccess: isSuccessFacebook,
-      data: loginResponseFacebook,
-    },
-  ] = useLoginWithFacebookMutation();
-  const [
-    loginUser,
-    {
-      isLoading: isLoadingPassword,
-      isError: isErrorPassword,
-      error: errorPassword,
-      isSuccess: isSuccessPassword,
-      data: loginResponsePassword,
-    },
-  ] = useLoginUserMutation();
+  const [loginWithGoogleRequest] = useLoginWithGoogleMutation();
+  const loginWithGoogle = async (...args: Parameters<typeof loginWithGoogleRequest>) => {
+    const result = await loginWithGoogleRequest(...args);
+
+    await handleLogin(result.data, result.error);
+
+    return result;
+  };
+
+  const [loginWithFacebookRequest] = useLoginWithFacebookMutation();
+  const loginWithFacebook = async (...args: Parameters<typeof loginWithFacebookRequest>) => {
+    const result = await loginWithFacebookRequest(...args);
+
+    await handleLogin(result.data, result.error);
+
+    return result;
+  };
+
+  const [loginUserRequest] = useLoginUserMutation();
+  const loginUser = async (...args: Parameters<typeof loginUserRequest>) => {
+    const result = await loginUserRequest(...args);
+
+    await handleLogin(result.data, result.error);
+
+    return result;
+  };
+
   const [logDevice] = useLogDeviceMutation();
 
-  useEffect(() => {
-    handleLogin(isLoadingGoogle, isSuccessGoogle, isErrorGoogle, loginResponseGoogle, errorGoogle);
-  }, [isLoadingGoogle, isSuccessGoogle, isErrorGoogle, loginResponseGoogle, errorGoogle]);
-
-  useEffect(() => {
-    handleLogin(isLoadingFacebook, isSuccessFacebook, isErrorFacebook, loginResponseFacebook, errorFacebook);
-  }, [isLoadingFacebook, isSuccessFacebook, isErrorFacebook, loginResponseFacebook, errorFacebook]);
-
-  useEffect(() => {
-    handleLogin(isLoadingPassword, isSuccessPassword, isErrorPassword, loginResponsePassword, errorPassword);
-  }, [isLoadingPassword, isSuccessPassword, isErrorPassword, loginResponsePassword, errorPassword]);
-
   const handleLogin = async (
-    isLoading: boolean,
-    isSuccess: boolean,
-    isError: boolean,
-    loginResponse: LoginResponse | undefined,
+    response: LoginResponse | undefined,
     error: FetchBaseQueryError | SerializedError | undefined,
   ) => {
-    if (!isLoading) {
-      if (isSuccess && loginResponse) {
-        if (loginResponse.token) {
-          loginOK(loginResponse);
-        } else {
-          addTokenToUser(loginResponse.user.email);
-        }
-      } else if (isError && error) {
-        await loginNotOk(error);
-      }
+    if (response) {
+      if (response.token) loginOK(response);
+      else addTokenToUser(response.user.email);
+    } else if (error) {
+      await loginNotOk(error);
     }
   };
 

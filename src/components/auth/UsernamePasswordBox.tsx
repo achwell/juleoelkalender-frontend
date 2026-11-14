@@ -5,7 +5,7 @@ import { ButtonType } from "@/types/ButtonProps";
 import LoginInput from "@/types/LoginInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC, useEffect } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { z } from "zod";
@@ -69,15 +69,14 @@ const UsernamePasswordBox: FC<Props> = ({ loginUser }) => {
     handleSubmit,
     reset,
     setValue,
-    watch,
   } = methods;
-  const { showPassword } = watch();
+  const { showPassword } = useWatch({ control: methods.control });
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
     }
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <FormProvider {...methods}>

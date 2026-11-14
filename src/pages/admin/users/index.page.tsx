@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/types/ButtonProps";
 import { User } from "@/types/generated";
 import { getNameOfUser, handleErrorWithStatus } from "@/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -18,31 +18,26 @@ const UsersPage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAppSelector((state) => state.authState);
   const { data: users, refetch } = useGetUsersQuery();
-  const [
-    deleteUser,
-    { isLoading: isDeleting, isSuccess: isSuccessDeleting, error: errorDelete, isError: isErrorDeleting },
-  ] = useDeleteUserMutation();
+  const [deleteUserRequest, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const deleteUser = async (...args: Parameters<typeof deleteUserRequest>) => {
+    const result = await deleteUserRequest(...args);
+
+    if ("data" in result && selectedUser) {
+      toast.success(t("delete.deleted", { name: getNameOfUser(selectedUser) }));
+      await refetch();
+      navigate("/admin/users");
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      await refetch();
+    }
+    close();
+    setSelectedUser(undefined);
+
+    return result;
+  };
 
   const [showDelete, setShowDelete] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isDeleting) {
-        if (isSuccessDeleting && selectedUser) {
-          toast.success(t("delete.deleted", { name: getNameOfUser(selectedUser) }));
-          await refetch();
-          navigate("/admin/users");
-        } else if (isErrorDeleting && errorDelete) {
-          handleErrorWithStatus(t, errorDelete);
-          await refetch();
-        }
-        close();
-        setSelectedUser(undefined);
-      }
-    };
-    finish();
-  }, [isDeleting]);
 
   const deleteUsr = () => {
     if (selectedUser?.id) {

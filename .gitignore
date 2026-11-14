@@ -26,3 +26,11 @@ coverage
 
 node
 /src/types/generated/
+/generated/
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Browser test artifacts
+/test-results/
+/playwright-report/

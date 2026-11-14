@@ -31,7 +31,7 @@ const ActionKnapper: FC<Props> = ({ id = "", buttons }) => {
       <fieldset
         className="hidden sm:flex md:flex lg:flex xl:flex items-start self-start w-full space-x-2"
         id="button-group"
-        role="group"
+
         aria-label="Outlined primary button group"
       >
         {buttons
@@ -76,7 +76,7 @@ const ActionKnapper: FC<Props> = ({ id = "", buttons }) => {
       <fieldset
         className="flex sm:hidden md:hidden lg:hidden xl:hidden items-start self-start w-full space-x-2"
         id="button-group"
-        role="group"
+
         aria-label="Outlined primary button group"
       >
         {buttons

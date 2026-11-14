@@ -1,27 +1,13 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import { Review, ReviewData, ReviewWithUser } from "@/types/generated";
 import { downloadBinaryData } from "@/utils";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const reviewApi = createApi({
-  reducerPath: "reviewApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/review`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const reviewApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getReviews: builder.query<ReviewWithUser[], void>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/review",
           credentials: "include",
         };
       },
@@ -30,7 +16,7 @@ export const reviewApi = createApi({
     downloadAllReviewsExcel: builder.mutation({
       async queryFn({ name, language }, _api, _extraOptions, baseQuery) {
         const result = await baseQuery({
-          url: `/export/${language}`,
+          url: `/api/v1/review/export/${language}`,
           cache: "no-cache",
           responseHandler: (response) => response.blob(),
         });
@@ -40,7 +26,7 @@ export const reviewApi = createApi({
     getReviewDataByBeerId: builder.query<ReviewData[], string>({
       query: (id) => {
         return {
-          url: `/reviewdata/${id}`,
+          url: `/api/v1/review/reviewdata/${id}`,
           credentials: "include",
         };
       },
@@ -49,7 +35,7 @@ export const reviewApi = createApi({
     getReview: builder.query<Review, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/review/${id}`,
           credentials: "include",
         };
       },
@@ -61,7 +47,7 @@ export const reviewApi = createApi({
     >({
       query: (id) => {
         return {
-          url: `/bycalendarbeerandreviewer/${id.calendarId}/${id.beerId}/${id.reviewerId}`,
+          url: `/api/v1/review/bycalendarbeerandreviewer/${id.calendarId}/${id.beerId}/${id.reviewerId}`,
           credentials: "include",
         };
       },
@@ -69,7 +55,7 @@ export const reviewApi = createApi({
     }),
     addReview: builder.mutation<Review, Partial<Review>>({
       query: (body) => ({
-        url: "",
+        url: "/api/v1/review",
         credentials: "include",
         method: "POST",
         body,
@@ -78,7 +64,7 @@ export const reviewApi = createApi({
     }),
     updateReview: builder.mutation<Review, Pick<Review, "id"> & Partial<Review>>({
       query: ({ id, ...patch }) => ({
-        url: `/${id}`,
+        url: `/api/v1/review/${id}`,
         credentials: "include",
         method: "PUT",
         body: patch,
@@ -100,7 +86,7 @@ export const reviewApi = createApi({
     deleteReview: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/review/${id}`,
           credentials: "include",
           method: "DELETE",
         };

@@ -11,7 +11,7 @@ const RatingTable: FC<{
     <table className="table table-striped">
       <thead>
         <tr>
-          <th></th>
+          <th aria-label={t("pages.calendar.review.vote")}></th>
           <th>{t("ratingtable.average.yourbeer")}</th>
           <th>{t("ratingtable.average.calendar")}</th>
         </tr>

@@ -1,4 +1,4 @@
-import { HealthStatus } from "@/redux/features/dashboardSlice";
+import type { HealthStatusCode as HealthStatus } from "@/types/dashboard/HealthStatus";
 import Device from "@/types/dashboard/Device";
 import { Beer, User } from "@/types/generated";
 

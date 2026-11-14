@@ -1,5 +1,5 @@
 import FormInputProps from "@/types/FormInputProps";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { JSX } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 

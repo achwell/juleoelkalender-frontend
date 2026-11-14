@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/hooks";
 import BeerDetails from "@/types/BeerDetails";
 import BeerWithCalendarAndDayAndReview from "@/types/BeerWithCalendarAndDayAndReview";
 import { formateRatingvalue } from "@/utils";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/components/table/tableTypes";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -101,7 +101,7 @@ const TodaysBeer = () => {
     <>
       <ViewBeerModal beerDetails={beer} show={open} hide={() => setOpen(false)} />
       <H2>{t("todaysbeer.todaysbeer")}</H2>
-      <Table data={data} cols={columns} small={true} disableGlobalFilters={true} />
+      <Table data={data} columns={columns} small={true} disableGlobalFilters={true} />
     </>
   );
 };

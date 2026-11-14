@@ -1,49 +1,25 @@
 import GlobalFilter from "@/components/table/filter/GlobalFilter";
 import Pagination from "@/components/table/pagination/Pagination";
 import TableBody from "@/components/table/TableBody";
+import { features } from "@/components/table/tableFeatures";
+import type { ColumnDef } from "@/components/table/tableTypes";
 import THead from "@/components/table/THead";
-import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
-import {
-  AccessorKeyColumnDefBase,
-  ColumnFiltersState,
-  FilterFn,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  IdIdentifier,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
-import { JSX, memo, useMemo, useState } from "react";
+import { type PaginationState, type RowData, useTable } from "@tanstack/react-table";
+import { JSX } from "react";
 import { useTranslation } from "react-i18next";
 
-declare module "@tanstack/react-table" {
-  //add fuzzy filter to the filterFns
-  interface FilterFns {
-    fuzzy: FilterFn<unknown>;
-  }
-
-  interface FilterMeta {
-    itemRank: RankingInfo;
-  }
-}
-
-type ColType<T> = AccessorKeyColumnDefBase<T, any> & Partial<IdIdentifier<T, any>>;
-
-interface Props<T> {
+interface Props<T extends RowData> {
   data: T[];
-  cols: ColType<T>[];
+  columns: ColumnDef<T, any>[];
   actionButtons?: JSX.Element;
   disableGlobalFilters?: boolean;
   defaultPagination?: PaginationState;
   small?: boolean;
 }
 
-const Table = <T,>({
+const Table = <T extends RowData>({
   data,
-  cols,
+  columns,
   actionButtons,
   disableGlobalFilters = false,
   defaultPagination = {
@@ -53,77 +29,37 @@ const Table = <T,>({
   small = false,
 }: Props<T>) => {
   const { t } = useTranslation();
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination, setPagination] = useState(defaultPagination);
-
-  const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(row.getValue(columnId), value);
-    addMeta({ itemRank });
-    return itemRank.passed;
-  };
-
-  // @ts-ignore
-  const columns = useMemo<ColType<T, any>[]>(() => cols, []);
-
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
-    defaultColumn: {
-      minSize: 60,
-      maxSize: 800,
-    },
-    filterFns: {
-      fuzzy: fuzzyFilter,
-    },
-    state: {
-      columnFilters,
-      globalFilter,
-      pagination,
-      sorting,
-    },
+    defaultColumn: { minSize: 60, maxSize: 800 },
+    initialState: { pagination: defaultPagination },
     autoResetPageIndex: false,
     columnResizeMode: "onChange",
-    debugColumns: false,
-    debugHeaders: true,
-    debugTable: true,
     enableFilters: true,
     enableSorting: true,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     globalFilterFn: "fuzzy",
-    manualPagination: false,
-    manualSorting: false,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
   });
+  const { globalFilter } = table.state;
 
-  const columnSizeVars = useMemo(() => {
-    const headers = table.getFlatHeaders();
-    const colSizes: { [key: string]: number } = {};
-    for (const element of headers) {
-      const header = element;
-      const { id, column } = header;
-      const { id: columnId } = column;
-      const size = header.getSize();
-      const columnSize = column.getSize();
-      colSizes[`--header-${id}-size`] = size * 1.2;
-      colSizes[`--col-${columnId}-size`] = columnSize * 1.2;
-    }
-    return colSizes;
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing]);
-
+  const headers = table.getFlatHeaders();
+  const colSizes: { [key: string]: number } = {};
+  for (const element of headers) {
+    const header = element;
+    const { id, column } = header;
+    const { id: columnId } = column;
+    const size = header.getSize();
+    const columnSize = column.getSize();
+    colSizes[`--header-${id}-size`] = size * 1.2;
+    colSizes[`--col-${columnId}-size`] = columnSize * 1.2;
+  }
   return (
     <div>
       <div className="flex flex-row">
         {actionButtons}
         {!disableGlobalFilters && data.length > 0 && (
-          <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          <GlobalFilter globalFilter={String(globalFilter ?? "")} setGlobalFilter={table.setGlobalFilter} />
         )}
       </div>
       {data.length < 1 && <div>{t("table.norowstoshow")}</div>}
@@ -132,18 +68,14 @@ const Table = <T,>({
           <table
             {...{
               style: {
-                ...columnSizeVars, //Define column sizes on the <table> element
+                ...colSizes, //Define column sizes on the <table> element
                 width: table.getTotalSize() / (small ? 2 : 1),
               },
             }}
             className="divTable border-collapse my-4 w-full table-auto"
           >
             <THead headerGroups={table.getHeaderGroups() ?? []} small={small} />
-            {table.getState().columnSizingInfo.isResizingColumn ? (
-              <MemoizedTableBody table={table} small={small} />
-            ) : (
-              <TableBody table={table} small={small} />
-            )}
+            <TableBody table={table} small={small} />
           </table>
           <Pagination table={table} />
         </>
@@ -152,8 +84,3 @@ const Table = <T,>({
   );
 };
 export default Table;
-
-export const MemoizedTableBody = memo(
-  TableBody,
-  (prev, next) => prev.table.options.data === next.table.options.data,
-) as typeof TableBody;

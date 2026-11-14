@@ -1,7 +1,6 @@
-import { BASE_URL } from "@/environment";
 import Exchange from "@/types/dashboard/Exchange";
 import HealthStatus from "@/types/dashboard/HealthStatus";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
 export interface Metric {
   name: string;
@@ -21,23 +20,12 @@ export interface AvailableTag {
   values: string[];
 }
 
-export const actuatorApi = createApi({
-  reducerPath: "actuatorApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/actuator`,
-    mode: "cors",
-    credentials: "omit",
-    prepareHeaders: (headers) => {
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      return headers;
-    },
-  }),
-  tagTypes: ["Dashboard"],
+export const actuatorApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     metrics: builder.query<Metric, string>({
       query(requiredMetricName) {
         return {
-          url: `/metrics/${requiredMetricName}`,
+          url: `/actuator/metrics/${requiredMetricName}`,
           credentials: "include",
         };
       },
@@ -45,7 +33,7 @@ export const actuatorApi = createApi({
     health: builder.query<HealthStatus, void>({
       query() {
         return {
-          url: "/health",
+          url: "/actuator/health",
           credentials: "include",
         };
       },
@@ -53,7 +41,7 @@ export const actuatorApi = createApi({
     httpexchanges: builder.query<{ exchanges: Exchange[] }, void>({
       query: () => {
         return {
-          url: "/httpexchanges",
+          url: "/actuator/httpexchanges",
           credentials: "include",
         };
       },

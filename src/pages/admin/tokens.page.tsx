@@ -16,8 +16,8 @@ import { useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/types/ButtonProps";
 import { CalendarToken } from "@/types/generated";
 import { handleErrorWithStatus, hasAuthority } from "@/utils";
-import { createColumnHelper } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { createColumnHelper } from "@/components/table/tableTypes";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GiCheckMark } from "react-icons/gi";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -34,94 +34,73 @@ const TokensPage = () => {
   const { data: users, isFetching: isFetchingUsers } = useGetUsersQuery();
   const { data: calendars, isFetching: isFetchingCalendars } = useGetCalendarsQuery();
 
-  const [
-    addCalendarToken,
-    { isLoading: isAdding, isSuccess: isSuccessAdding, data: newToken, isError: isErrorAdding, error: errorAdding },
-  ] = useAddCalendarTokenMutation();
+  const [addCalendarTokenRequest, { isLoading: isAdding }] = useAddCalendarTokenMutation();
+  const addCalendarToken = async (...args: Parameters<typeof addCalendarTokenRequest>) => {
+    const result = await addCalendarTokenRequest(...args);
 
-  const [
-    deleteCalendarToken,
-    { isLoading: isDeleting, isSuccess: isSuccessDelete, isError: isErrorDelete, error: errorDelete },
-  ] = useDeleteCalendarTokenMutation();
+    if ("data" in result && result.data) {
+      if (result.data) {
+        toast.success(t("add.added", { field: result.data?.token }));
+        setSelectedToken(result.data);
+      }
+      setShowAddEditDialog(false);
+      await refetch();
+    }
+    if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      toast.error(t("add.error", { field: selectedToken.token }));
+      setSelectedToken(initialState);
+      setShowDeleteDialog(false);
+    }
 
-  const [
-    updateCalendarToken,
-    {
-      isLoading: isUpdating,
-      isSuccess: isSuccessUpdating,
-      data: updatedToken,
-      isError: isErrorUpdating,
-      error: errorUpdating,
-    },
-  ] = useUpdateCalendarTokenMutation();
+    return result;
+  };
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showAddEditDialog, setShowAddEditDialog] = useState(false);
-  const [selectedToken, setSelectedToken] = useState<CalendarToken>(initialState);
+  const [deleteCalendarTokenRequest, { isLoading: isDeleting }] = useDeleteCalendarTokenMutation();
+  const deleteCalendarToken = async (...args: Parameters<typeof deleteCalendarTokenRequest>) => {
+    const result = await deleteCalendarTokenRequest(...args);
 
-  useEffect(() => {
-    const finish = async () => {
+    if ("data" in result) {
       toast.success(t("delete.deleted", { name: selectedToken.token }));
       await refetch();
       setSelectedToken(initialState);
       setShowDeleteDialog(false);
-    };
-    if (!isDeleting) {
-      if (isSuccessDelete) {
-        finish();
-      }
-      if (isErrorDelete && errorDelete) {
-        handleErrorWithStatus(t, errorDelete);
-        toast.error(t("delete.error", { name: selectedToken.token }));
-        setSelectedToken(initialState);
-        setShowDeleteDialog(false);
-      }
     }
-  }, [isDeleting, isSuccessDelete, isErrorDelete, errorDelete]);
+    if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      toast.error(t("delete.error", { name: selectedToken.token }));
+      setSelectedToken(initialState);
+      setShowDeleteDialog(false);
+    }
 
-  useEffect(() => {
-    const finish = async () => {
-      if (newToken) {
-        toast.success(t("add.added", { field: newToken?.token }));
-        setSelectedToken(newToken);
+    return result;
+  };
+
+  const [updateCalendarTokenRequest, { isLoading: isUpdating }] = useUpdateCalendarTokenMutation();
+  const updateCalendarToken = async (...args: Parameters<typeof updateCalendarTokenRequest>) => {
+    const result = await updateCalendarTokenRequest(...args);
+
+    if ("data" in result && result.data) {
+      if (result.data) {
+        toast.success(t("update.updated", { field: result.data?.token }));
+        setSelectedToken(result.data);
       }
       setShowAddEditDialog(false);
       await refetch();
-    };
-    if (!isAdding) {
-      if (isSuccessAdding && newToken) {
-        finish();
-      }
-      if (isErrorAdding && errorAdding) {
-        handleErrorWithStatus(t, errorAdding);
-        toast.error(t("add.error", { field: selectedToken.token }));
-        setSelectedToken(initialState);
-        setShowDeleteDialog(false);
-      }
     }
-  }, [isAdding, isSuccessAdding, newToken, isErrorAdding, errorAdding]);
+    if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      toast.error(t("update.error", { field: selectedToken.token }));
+      setSelectedToken(initialState);
+      setShowDeleteDialog(false);
+    }
 
-  useEffect(() => {
-    const finish = async () => {
-      if (updatedToken) {
-        toast.success(t("update.updated", { field: updatedToken?.token }));
-        setSelectedToken(updatedToken);
-      }
-      setShowAddEditDialog(false);
-      await refetch();
-    };
-    if (!isUpdating) {
-      if (isSuccessUpdating && updatedToken) {
-        finish();
-      }
-      if (isErrorUpdating && errorUpdating) {
-        handleErrorWithStatus(t, errorUpdating);
-        toast.error(t("update.error", { field: selectedToken.token }));
-        setSelectedToken(initialState);
-        setShowDeleteDialog(false);
-      }
-    }
-  }, [isUpdating, isSuccessUpdating, newToken, isErrorUpdating, errorUpdating]);
+    return result;
+  };
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showAddEditDialog, setShowAddEditDialog] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<CalendarToken>(initialState);
 
   const redigerToken = (calendarToken: CalendarToken) => {
     setSelectedToken(calendarToken);
@@ -243,7 +222,7 @@ const TokensPage = () => {
       />
       <Table
         data={calendarTokens}
-        cols={columns}
+        columns={columns}
         actionButtons={
           <ActionKnapper
             buttons={[

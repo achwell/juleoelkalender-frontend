@@ -5,6 +5,7 @@ import { z } from "zod";
 const registerInputSchema = (t: TextFunction) =>
   zRegisterRequest
     .omit({ email: true })
+    .required({ calendarToken: true, firstName: true, lastName: true, password: true })
     .extend({
       email: z
         .email({ error: t("validation.invalid", { field: t("pages.register.email") }) })

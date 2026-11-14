@@ -4,7 +4,7 @@ import { useDownloadAllReviewsExcelMutation } from "@/redux/api/reviewApi";
 import { ButtonType } from "@/types/ButtonProps";
 import { ReviewWithUser } from "@/types/generated";
 import { formateRatingvalue } from "@/utils";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/components/table/tableTypes";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -85,7 +85,7 @@ const TotalReviews: FC<Props> = ({ reviews }) => {
   return (
     <Table
       data={reviews}
-      cols={columns}
+      columns={columns}
       actionButtons={
         reviews.length > 0 ? (
           <ActionKnapper

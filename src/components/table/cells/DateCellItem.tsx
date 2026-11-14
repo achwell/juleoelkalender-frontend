@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { parseISO } from "date-fns";
 import { format } from "date-fns-tz";
 import { FC } from "react";

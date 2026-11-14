@@ -1,19 +1,7 @@
-import { BASE_URL } from "@/environment";
 import Device from "@/types/dashboard/Device";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const logApi = createApi({
-  reducerPath: "logApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/log`,
-    mode: "cors",
-    credentials: "omit",
-    prepareHeaders: (headers) => {
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const logApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     log: builder.mutation<
       void,
@@ -23,21 +11,19 @@ export const logApi = createApi({
       }
     >({
       query: ({ logLevel, message }) => ({
-        url: `/${logLevel}`,
+        url: `/api/v1/log/${logLevel}`,
         credentials: "include",
         method: "POST",
         body: message,
       }),
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
     }),
     logDevice: builder.mutation<void, Partial<Device>>({
       query: (body) => ({
-        url: "/logDevice",
+        url: "/api/v1/log/logDevice",
         credentials: "include",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
     }),
   }),
 });

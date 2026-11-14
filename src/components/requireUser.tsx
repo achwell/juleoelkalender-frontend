@@ -1,6 +1,5 @@
 import { setCurrentUser, setToken } from "@/redux/features/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
-import { store } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { User } from "@/types/generated";
 import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
@@ -19,7 +18,7 @@ const RequireUser = ({ requiredAutorities }: { requiredAutorities: string[] }) =
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { currentUser, token } = store.getState().authState;
+  const { currentUser, token } = useAppSelector((state) => state.authState);
 
   useEffect(() => {
     const logout = async () => {
@@ -30,15 +29,15 @@ const RequireUser = ({ requiredAutorities }: { requiredAutorities: string[] }) =
 
     if (token) {
       const decodedJwt: JwtToken = jwtDecode(token);
-      if (!(decodedJwt && decodedJwt.exp * 1000 >= Date.now())) {
+      if (!(decodedJwt && decodedJwt.exp * 1000 >= new Date().getTime())) {
         logout().catch(console.error);
       }
     }
-  }, [token]);
+  }, [token, dispatch, navigate]);
 
   const hasRights = (user: User) => {
-    return requiredAutorities.filter((value) =>
-      user.role.authorities.map((authority) => authority.name).includes(value),
+    return requiredAutorities.some(
+      (value) => user.role.authorities.some((authority) => authority.name === value) || user.role.name === value,
     );
   };
 

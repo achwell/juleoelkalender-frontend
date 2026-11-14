@@ -4,7 +4,6 @@ export default defineConfig({
   input: "./openapi.json",
   output: {
     clean: true,
-    postProcess: ["oxlint", "prettier"],
     path: "./src/types/generated",
   },
   parser: {
@@ -13,10 +12,25 @@ export default defineConfig({
     },
   },
   plugins: [
-    "zod",
     {
-      name: "@hey-api/typescript",
-      enums: "typescript",
+      name: "zod",
+      dates: {
+        offset: true,
+      },
+      $resolvers: {
+        string: (ctx) => (ctx.schema.format === "binary" ? ctx.$.call(ctx.$.attr(ctx.$("z"), "file")) : undefined),
+
+        number: (ctx) => {
+          if (ctx.schema.type === "integer" && ctx.schema.format === "int32") {
+            return ctx.$.call(ctx.$.attr(ctx.$("z"), "int"));
+          }
+          if (ctx.schema.type === "integer" && ctx.schema.format === "int64") {
+            return ctx.$.call(ctx.$.attr(ctx.$("z"), "int"));
+          }
+
+          return undefined;
+        },
+      },
     },
     {
       enums: {

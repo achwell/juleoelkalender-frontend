@@ -28,8 +28,6 @@ use(Backend)
     (err) => {
       if (err) {
         console.warn({ err });
-      } else {
-        console.log("i18next is ready...");
       }
     },
   );

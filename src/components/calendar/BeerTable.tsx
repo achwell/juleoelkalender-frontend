@@ -7,7 +7,7 @@ import { useAppSelector } from "@/redux/hooks";
 import BeerDetails from "@/types/BeerDetails";
 import { ButtonType } from "@/types/ButtonProps";
 import { UserWithoutChildren } from "@/types/generated";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/components/table/tableTypes";
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -124,7 +124,7 @@ const BeerTable: FC<{ beers: BeerDetails[]; back: () => void }> = ({ beers, back
       <ViewBeerModal beerDetails={beer} show={open} hide={() => setOpen(false)} />
       <Table
         data={beers}
-        cols={columns}
+        columns={columns}
         actionButtons={
           <ActionKnapper
             buttons={[

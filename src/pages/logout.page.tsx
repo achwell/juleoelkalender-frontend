@@ -1,3 +1,4 @@
+import { baseApi } from "@/redux/api/baseApi";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import { setCurrentUser, setToken } from "@/redux/features/authSlice";
@@ -13,21 +14,14 @@ const LogoutPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const logout = async () => {
+  useEffect(() => {
     dispatch(setCurrentUser(null));
     dispatch(setToken(null));
     dispatch(setCurrentCalendarToken(null));
+    dispatch(baseApi.util.resetApiState());
     navigate("/login");
-  };
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    logout().then((_) =>
-      toast.success("Logget ut", {
-        position: "top-right",
-      }),
-    );
-  }, []);
+    toast.success("Logget ut", { position: "top-right" });
+  }, [dispatch, navigate]);
 
   return (
     <>

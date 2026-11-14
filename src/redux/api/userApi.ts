@@ -1,26 +1,13 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import { User } from "@/types/generated";
 import { downloadBinaryData } from "@/utils";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const userApi = createApi({
-  reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/user`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/user",
           credentials: "include",
         };
       },
@@ -29,7 +16,7 @@ export const userApi = createApi({
     getUser: builder.query<User, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/user/${id}`,
           credentials: "include",
         };
       },
@@ -38,7 +25,7 @@ export const userApi = createApi({
     getUserByEmail: builder.query<User, string>({
       query: (email) => {
         return {
-          url: `/email/${email}`,
+          url: `/api/v1/user/email/${email}`,
           credentials: "include",
         };
       },
@@ -46,7 +33,7 @@ export const userApi = createApi({
     }),
     addUser: builder.mutation<User, Partial<User>>({
       query: (body) => ({
-        url: "",
+        url: "/api/v1/user",
         credentials: "include",
         method: "POST",
         body,
@@ -55,7 +42,7 @@ export const userApi = createApi({
     }),
     updateUser: builder.mutation<User, Pick<User, "id"> & Partial<User>>({
       query: ({ id, ...patch }) => ({
-        url: `/${id}`,
+        url: `/api/v1/user/${id}`,
         credentials: "include",
         method: "PUT",
         body: patch,
@@ -77,7 +64,7 @@ export const userApi = createApi({
     deleteUser: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/user/${id}`,
           credentials: "include",
           method: "DELETE",
         };
@@ -87,7 +74,7 @@ export const userApi = createApi({
     downloadAllUsersExcel: builder.mutation({
       async queryFn({ name, language }, _api, _extraOptions, baseQuery) {
         const result = await baseQuery({
-          url: `/export/${language}`,
+          url: `/api/v1/user/export/${language}`,
           cache: "no-cache",
           responseHandler: (response) => response.blob(),
         });

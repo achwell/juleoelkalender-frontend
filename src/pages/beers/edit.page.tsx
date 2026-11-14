@@ -19,8 +19,8 @@ const EditBeerPage = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const from = searchParams.get("from");
-  const [beerId, setBeerId] = useState<string>();
-  const [beer, setBeer] = useState<Beer>();
+  const [defaults] = useState(() => ({ id: uuidv4(), date: new Date() }));
+  const beerId = id === "new" ? undefined : id;
   const { currentUser } = useAppSelector((state) => state.authState);
   const { data: beerStyles } = useGetBeerStylesQuery(undefined);
   const { data, isFetching } = useGetBeerQuery(beerId ?? "", { skip: !beerId });
@@ -29,13 +29,17 @@ const EditBeerPage = () => {
     if (beerStyles) {
       dispatch(setBeerStyles(beerStyles.map((b) => b.name)));
     }
-  }, [beerStyles]);
+  }, [beerStyles, dispatch]);
 
-  useEffect(() => {
-    if (currentUser) {
-      if (id === "new") {
-        setBeer({
-          id: uuidv4(),
+  const canEdit =
+    !!currentUser &&
+    !!data &&
+    hasAuthority(currentUser, "beer:update") &&
+    (data.brewer.id === currentUser.id || hasAuthority(currentUser, "beer:update_other"));
+  const beer: Beer | undefined =
+    id === "new" && currentUser
+      ? {
+          id: defaults.id,
           name: "",
           style: "",
           description: "",
@@ -44,33 +48,20 @@ const EditBeerPage = () => {
           ebc: 0,
           recipe: "",
           untapped: "",
-          brewer: { ...currentUser, createdDate: currentUser.createdDate ?? new Date() },
+          brewer: { ...currentUser, createdDate: currentUser.createdDate ?? defaults.date },
           reviews: [],
           archived: false,
-          brewedDate: new Date(),
-          bottleDate: new Date(),
-          createdDate: new Date(),
+          brewedDate: defaults.date,
+          bottleDate: defaults.date,
+          createdDate: defaults.date,
           desiredDate: undefined,
-        });
-      } else {
-        setBeerId(id);
-      }
-    }
-  }, [id, currentUser]);
-
+        }
+      : canEdit
+        ? data
+        : undefined;
   useEffect(() => {
-    if (!isFetching && !!data && !!currentUser && !!data.id) {
-      if (
-        hasAuthority(currentUser, "beer:update") &&
-        (data.brewer.id === currentUser.id ||
-          (data.brewer.id !== currentUser.id && hasAuthority(currentUser, "beer:update_other")))
-      ) {
-        setBeer(data);
-      } else {
-        navigate(from ?? "/beers");
-      }
-    }
-  }, [beerId, data, isFetching]);
+    if (data && currentUser && !isFetching && !canEdit) navigate(from ?? "/beers");
+  }, [data, currentUser, isFetching, canEdit, navigate, from]);
 
   if (!currentUser || !beer) {
     return <FullScreenLoader />;

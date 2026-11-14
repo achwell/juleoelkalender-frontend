@@ -3,34 +3,25 @@ import ResetPasswordForm from "@/components/forgottenpassword/ResetPasswordForm"
 import H1 from "@/components/layout/H1";
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import { useGetPasswordChangeRequestsQuery } from "@/redux/api/passwordChangeRequestApi";
-import { PasswordChangeRequest } from "@/types/generated";
 import { addHours, isAfter } from "date-fns";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
 
 const ForgottenpasswordPage = () => {
+  const [openedAt] = useState(() => new Date());
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
   const token = searchParams.get("token");
 
-  const { data, isFetching } = useGetPasswordChangeRequestsQuery();
-  const [passwordChangeRequest, setPasswordChangeRequest] = useState<PasswordChangeRequest>();
-
-  useEffect(() => {
-    if (email && token && data) {
-      const request = data.find((d) => d.email === email && d.token === token);
-      if (request) {
-        const now = new Date();
-        const expires = addHours(request.created, 1);
-        if (isAfter(expires, now)) {
-          setPasswordChangeRequest(request);
-        }
-      }
-    }
-  }, [email, token, isFetching]);
+  const { data } = useGetPasswordChangeRequestsQuery();
+  const passwordChangeRequest = useMemo(() => {
+    if (!email || !token) return undefined;
+    const request = data?.find((d) => d.email === email && d.token === token);
+    return request && isAfter(addHours(request.created, 1), openedAt) ? request : undefined;
+  }, [email, token, data, openedAt]);
 
   const callback = () => {
     navigate("/");

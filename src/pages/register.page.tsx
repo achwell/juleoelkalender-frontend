@@ -13,7 +13,7 @@ import RegisterInput from "@/types/RegisterInput";
 import { handleErrorWithStatus } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -37,22 +37,11 @@ const RegisterPage = () => {
     },
   });
 
-  const [registerUser, { isLoading, isSuccess, error, isError }] = useRegisterUserMutation();
+  const [registerUserRequest, { isLoading }] = useRegisterUserMutation();
+  const registerUser = async (...args: Parameters<typeof registerUserRequest>) => {
+    const result = await registerUserRequest(...args);
 
-  const navigate = useNavigate();
-
-  const {
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { isDirty, isSubmitSuccessful, isValid },
-    reset,
-  } = methods;
-
-  const { showPassword } = watch();
-
-  useEffect(() => {
-    if (isSuccess) {
+    if ("data" in result) {
       toast.success(
         t("add.added", {
           field: t("pages.register.user"),
@@ -61,18 +50,31 @@ const RegisterPage = () => {
       navigate("/login");
     }
 
-    if (isError) {
-      if (error) {
-        handleErrorWithStatus(t, error);
+    if ("error" in result) {
+      if (result.error) {
+        handleErrorWithStatus(t, result.error);
       }
     }
-  }, [isLoading]);
+
+    return result;
+  };
+
+  const navigate = useNavigate();
+
+  const {
+    handleSubmit,
+    setValue,
+    formState: { isDirty, isSubmitSuccessful, isValid },
+    reset,
+  } = methods;
+
+  const { showPassword } = useWatch({ control: methods.control });
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
     }
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, reset]);
 
   const onSubmit: SubmitHandler<RegisterInput> = async (values) => {
     return registerUser(values);

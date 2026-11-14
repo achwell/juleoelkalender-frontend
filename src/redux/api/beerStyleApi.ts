@@ -1,51 +1,38 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import { BeerStyle } from "@/types/generated";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const beerStyleApi = createApi({
-  reducerPath: "beerStyleApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/beerstyle`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const beerStyleApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBeerStyles: builder.query<BeerStyle[], string | undefined>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/beerstyle",
           credentials: "include",
         };
       },
-      providesTags: ["Beer", "Review", "Calendar", "User"],
+      providesTags: ["BeerStyle"],
     }),
     getBeerStyle: builder.query<BeerStyle, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/beerstyle/${id}`,
           credentials: "include",
         };
       },
-      providesTags: ["Beer", "Review", "Calendar", "User"],
+      providesTags: ["BeerStyle"],
     }),
     addBeerStyle: builder.mutation<BeerStyle, Partial<BeerStyle>>({
-      query: ({ id, ...body }) => ({
-        url: "",
+      query: ({ id: _id, ...body }) => ({
+        url: "/api/v1/beerstyle",
         credentials: "include",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
+      invalidatesTags: ["BeerStyle"],
     }),
     updateBeerStyle: builder.mutation<BeerStyle, Pick<BeerStyle, "id"> & Partial<BeerStyle>>({
       query: ({ id, ...patch }) => ({
-        url: `/${id}`,
+        url: `/api/v1/beerstyle/${id}`,
         credentials: "include",
         method: "PUT",
         body: patch,
@@ -62,17 +49,17 @@ export const beerStyleApi = createApi({
           patchResult.undo();
         }
       },
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
+      invalidatesTags: ["BeerStyle"],
     }),
     deleteBeerStyle: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/beerstyle/${id}`,
           credentials: "include",
           method: "DELETE",
         };
       },
-      invalidatesTags: ["Beer", "Review", "Calendar", "User"],
+      invalidatesTags: ["BeerStyle"],
     }),
   }),
 });

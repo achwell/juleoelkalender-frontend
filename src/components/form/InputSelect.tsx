@@ -1,5 +1,5 @@
 import FormInputProps from "@/types/FormInputProps";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { JSX } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -25,14 +25,14 @@ const InputSelect = <TFormValues extends Record<string, unknown>>({
         control={control}
         rules={rules}
         render={({ field, fieldState }) => {
-          const { name, onChange } = field;
+          const { name: nameValue, onChange } = field;
           const { error } = fieldState;
           const errorMessages = error ? (validateErrorMessage ?? error.message) : undefined;
           const hasError = !!errorMessages;
           return (
             <>
               <select
-                id={name}
+                id={nameValue}
                 disabled={disabled}
                 required={required}
                 {...field}
@@ -47,9 +47,9 @@ const InputSelect = <TFormValues extends Record<string, unknown>>({
                 )}
                 aria-errormessage={errorMessages}
               >
-                {(selectItems ?? []).map((selectItems) => (
-                  <option key={selectItems.key} value={selectItems.key}>
-                    {selectItems.value}
+                {(selectItems ?? []).map((selectItemsValue) => (
+                  <option key={selectItemsValue.key} value={selectItemsValue.key}>
+                    {selectItemsValue.value}
                   </option>
                 ))}
               </select>

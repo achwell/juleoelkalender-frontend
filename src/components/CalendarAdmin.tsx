@@ -9,59 +9,46 @@ import { useAppSelector } from "@/redux/hooks";
 import { ButtonType } from "@/types/ButtonProps";
 import { Calendar } from "@/types/generated";
 import { handleErrorWithStatus, hasAuthority } from "@/utils";
-import { createColumnHelper, FilterFn } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { createColumnHelper, FilterFn } from "@/components/table/tableTypes";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GiCheckMark } from "react-icons/gi";
 import { MdOutlineBlock, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
+const archivedFilter: FilterFn<Calendar> = (row, columnId, filterValue) => {
+  const rowValue = row.getValue(columnId);
+  return filterValue === null || filterValue === undefined ? true : String(rowValue) !== filterValue;
+};
+
 const CalendarAdmin = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: calendars } = useGetCalendarsQuery();
+  const { data: calendars, refetch } = useGetCalendarsQuery();
   const { currentUser } = useAppSelector((state) => state.authState);
-  const [
-    deleteCalendar,
-    { isLoading: isDeleting, isSuccess: isSuccessDeleting, isError: isErrorDeleting, error: errorDeleting },
-  ] = useDeleteCalendarMutation();
-  const { refetch } = useGetCalendarsQuery();
+  const [deleteCalendarRequest, { isLoading: isDeleting }] = useDeleteCalendarMutation();
+  const deleteCalendar = async (...args: Parameters<typeof deleteCalendarRequest>) => {
+    const result = await deleteCalendarRequest(...args);
 
-  const [showDelete, setShowDelete] = useState(false);
-  const [selectedCalendar, setSelectedCalendar] = useState<Calendar>();
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isDeleting) {
-        if (isSuccessDeleting && selectedCalendar) {
-          toast.success(
-            t("delete.deleted", {
-              deleted: selectedCalendar.name,
-            }),
-          );
-          await refetch();
-        } else if (isErrorDeleting && errorDeleting) {
-          handleErrorWithStatus(t, errorDeleting);
-          await refetch();
-        }
-        setShowDelete(false);
-        setSelectedCalendar(undefined);
-      }
-    };
-    finish();
-  }, [errorDeleting, isDeleting, isErrorDeleting, isSuccessDeleting, refetch]);
-
-  useEffect(() => {
-    if (selectedCalendar?.id) {
-      setShowDelete(true);
+    if ("data" in result && selectedCalendar) {
+      toast.success(
+        t("delete.deleted", {
+          deleted: selectedCalendar.name,
+        }),
+      );
+      await refetch();
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+      await refetch();
     }
-  }, [selectedCalendar]);
+    setSelectedCalendar(undefined);
 
-  const archivedFilter: FilterFn<Calendar> = (row, columnId, filterValue) => {
-    const rowValue = row.getValue(columnId);
-    return filterValue === null || filterValue === undefined ? true : String(rowValue) !== filterValue;
+    return result;
   };
+
+  const [selectedCalendar, setSelectedCalendar] = useState<Calendar>();
+  const showDelete = !!selectedCalendar?.id;
 
   const columnHelper = createColumnHelper<Calendar>();
   const metaPublished: Meta = { filterVariant: FilterVariant.publishedInverted };
@@ -140,7 +127,7 @@ const CalendarAdmin = () => {
     <div className="flex flex-col items-center justify-items-center">
       <ModalDialog
         show={showDelete}
-        hide={() => setShowDelete(false)}
+        hide={() => setSelectedCalendar(undefined)}
         title={t("delete.delete", {
           name: selectedCalendar?.name,
         })}
@@ -159,7 +146,7 @@ const CalendarAdmin = () => {
               disabled: isDeleting,
             },
             {
-              onClick: () => setShowDelete(false),
+              onClick: () => setSelectedCalendar(undefined),
               icon: ButtonType.CANCEL,
               text: t("buttons.cancel"),
             },
@@ -169,7 +156,7 @@ const CalendarAdmin = () => {
       <Paragraph>{t("pages.calendar.admin.ingress")}</Paragraph>
       <Table
         data={calendars}
-        cols={columns}
+        columns={columns}
         actionButtons={
           <ActionKnapper
             buttons={[

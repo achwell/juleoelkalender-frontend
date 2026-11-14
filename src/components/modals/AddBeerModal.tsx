@@ -60,7 +60,7 @@ const AddBeerModal = ({
         beer: beers[0],
       });
     }
-  }, [beers, calendar, initialDay]);
+  }, [beers, calendar, initialDay, reset]);
 
   const addBeer = (data: BeerCalendar) => {
     callback({ ...data, id: "" });

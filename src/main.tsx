@@ -6,7 +6,9 @@ import { createRoot } from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import "./i18n";
+import { registerServiceWorker } from "./registerServiceWorker";
+import i18n from "./i18n";
+void i18n;
 import "@/style/index.css";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
@@ -22,3 +24,7 @@ root.render(
     </ErrorBoundary>
   </StrictMode>,
 );
+
+if (import.meta.env.PROD) {
+  registerServiceWorker();
+}

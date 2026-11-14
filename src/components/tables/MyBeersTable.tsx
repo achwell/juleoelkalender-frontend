@@ -4,12 +4,24 @@ import Meta from "@/components/table/filter/Meta";
 import Table from "@/components/table/Table";
 import ButtonProps, { ButtonType } from "@/types/ButtonProps";
 import { Beer, ReviewWithoutChildren } from "@/types/generated";
-import { createColumnHelper, FilterFn } from "@tanstack/react-table";
+import { createColumnHelper, FilterFn } from "@/components/table/tableTypes";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { GiCheckMark } from "react-icons/gi";
 import { MdOutlineBlock } from "react-icons/md";
 import { useNavigate } from "react-router";
+
+const archivedFilter: FilterFn<Beer> = (row, columnId, filterValue) => {
+  const rowValue = row.getValue(columnId);
+  return filterValue === null || filterValue === undefined ? true : String(rowValue) !== filterValue;
+};
+
+const isHidden = (reviews?: ReviewWithoutChildren[]) => {
+  if (!reviews) {
+    return true;
+  }
+  return reviews.length === 0;
+};
 
 const MyBeersTable: FC<{
   beers: Beer[];
@@ -18,11 +30,6 @@ const MyBeersTable: FC<{
 }> = ({ beers, page, buttons = [] }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  const archivedFilter: FilterFn<Beer> = (row, columnId, filterValue) => {
-    const rowValue = row.getValue(columnId);
-    return filterValue === null || filterValue === undefined ? true : String(rowValue) !== filterValue;
-  };
 
   const columnHelper = createColumnHelper<Beer>();
   const metaArchived: Meta = { filterVariant: FilterVariant.activeInverted };
@@ -85,17 +92,10 @@ const MyBeersTable: FC<{
     }),
   ];
 
-  const isHidden = (reviews?: ReviewWithoutChildren[]) => {
-    if (!reviews) {
-      return true;
-    }
-    return reviews.length === 0;
-  };
-
   return (
     <Table
       data={beers}
-      cols={columns}
+      columns={columns}
       actionButtons={buttons && buttons.length > 0 ? <ActionKnapper buttons={buttons} /> : undefined}
     />
   );

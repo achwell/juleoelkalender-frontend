@@ -1,4 +1,4 @@
-import { HealthStatus } from "@/redux/features/dashboardSlice";
+import type { HealthStatusCode as HealthStatus } from "@/types/dashboard/HealthStatus";
 import ErrorMessage from "@/types/ErrorMessage";
 import { Review, RoleName, User } from "@/types/generated";
 import TextFunction from "@/types/TextFunction";

@@ -12,9 +12,6 @@ export const rtkQueryErrorLogger: Middleware = (_api: MiddlewareAPI) => (next) =
     const { status, data } = payload;
     // @ts-ignore
     const { baseQueryMeta } = meta;
-    const { request, response } = baseQueryMeta;
-    const headers = response.headers;
-    console.log({ action, status, data, message, request, response, headers });
     const content = data || message;
     console.warn(content);
     if (status && status === 401) {

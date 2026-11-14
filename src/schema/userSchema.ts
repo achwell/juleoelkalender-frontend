@@ -20,6 +20,7 @@ const userSchema = (t: TextFunction, allUsers: User[]) =>
       middleName: true,
       area: true,
     })
+    .required({ firstName: true, lastName: true, password: true })
     .extend({
       id: z.uuid().optional(),
       confirmPassword: z.string().min(1, {

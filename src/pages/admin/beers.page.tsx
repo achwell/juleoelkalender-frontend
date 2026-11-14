@@ -5,7 +5,7 @@ import Table from "@/components/table/Table";
 import { useDownloadAllBeersExcelMutation, useGetAllBeersWithCalendarQuery } from "@/redux/api/beerApi";
 import { ButtonType } from "@/types/ButtonProps";
 import { BeerWithCalendarAndDay } from "@/types/generated";
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper } from "@/components/table/tableTypes";
 import { useTranslation } from "react-i18next";
 import { GiCheckMark } from "react-icons/gi";
 import { MdOutlineBlock } from "react-icons/md";
@@ -80,7 +80,7 @@ const AllBeersPage = () => {
       <H1>{t("pages.beeradmin.header")}</H1>
       <Table
         data={beers}
-        cols={columns}
+        columns={columns}
         actionButtons={
           <ActionKnapper
             buttons={[

@@ -1,27 +1,12 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import { CalendarToken } from "@/types/generated";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
-export const calendarTokenApi = createApi({
-  reducerPath: "calendarTokenApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/admin/calendartoken`,
-    mode: "cors",
-    credentials: "omit",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ["CalendarToken"],
+export const calendarTokenApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCalendarTokens: builder.query<CalendarToken[], void>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/admin/calendartoken",
           credentials: "include",
         };
       },
@@ -30,15 +15,15 @@ export const calendarTokenApi = createApi({
     getCalendarToken: builder.query<CalendarToken, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/admin/calendartoken/${id}`,
           credentials: "include",
         };
       },
       providesTags: ["CalendarToken"],
     }),
     addCalendarToken: builder.mutation<CalendarToken, Partial<CalendarToken>>({
-      query: ({ id, ...body }) => ({
-        url: "",
+      query: ({ id: _id, ...body }) => ({
+        url: "/api/v1/admin/calendartoken",
         credentials: "include",
         method: "POST",
         body,
@@ -47,7 +32,7 @@ export const calendarTokenApi = createApi({
     }),
     updateCalendarToken: builder.mutation<CalendarToken, Pick<CalendarToken, "id"> & Partial<CalendarToken>>({
       query: (body) => ({
-        url: `/${body.id}`,
+        url: `/api/v1/admin/calendartoken/${body.id}`,
         credentials: "include",
         method: "PUT",
         body,
@@ -69,7 +54,7 @@ export const calendarTokenApi = createApi({
     deleteCalendarToken: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/admin/calendartoken/${id}`,
           credentials: "include",
           method: "DELETE",
         };

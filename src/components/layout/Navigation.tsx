@@ -1,7 +1,7 @@
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import { User } from "@/types/generated";
 import { hasAuthority, isUserAdmin } from "@/utils";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BsCalendar3 } from "react-icons/bs";
 import { IoBeerSharp } from "react-icons/io5";
@@ -18,108 +18,89 @@ interface Page {
   icon?: ReactNode;
 }
 
-const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
-  const [pages, setPages] = useState<Page[]>([]);
+const buildPages = (user: User, t: (key: string) => string) => {
+  const pages: Page[] = [
+    { title: t("menu.home"), url: "/", icon: <RiHome2Fill /> },
+    {
+      title: t("menu.calendars"),
+      url: "/calendar",
+      icon: <BsCalendar3 />,
+    },
+    {
+      title: t("menu.mybeers"),
+      url: "/beers",
+      icon: <PiBeerSteinLight />,
+    },
+    { title: t("menu.mypage"), url: "/user", icon: <TbUser /> },
+  ];
+  if (hasAuthority(user, "user:create")) {
+    pages.push({
+      title: t("menu.users"),
+      url: "/admin/users",
+      icon: <TbUsersGroup />,
+    });
+  }
+  if (hasAuthority(user, "review:create")) {
+    pages.push({
+      title: t("menu.reviews"),
+      url: "/admin/reviews",
+      icon: <MdOutlineReviews />,
+    });
+  }
+  if (hasAuthority(user, "calendartoken:create")) {
+    pages.push({
+      title: t("menu.token"),
+      url: "/admin/tokens",
+      icon: <MdToken />,
+    });
+  }
+  if (isUserAdmin(user)) {
+    pages.push({
+      title: t("menu.allbeers"),
+      url: "/admin/beers",
+      icon: <IoBeerSharp />,
+    });
+  }
+  if (hasAuthority(user, "beerstyle:create")) {
+    pages.push({
+      title: t("menu.beerstyles"),
+      url: "/admin/beerstyles",
+      icon: <SiStyleshare />,
+    });
+  }
+  if (hasAuthority(user, "dashboard")) {
+    pages.push({
+      title: t("menu.dashboard"),
+      url: "/admin/dashboard",
+      icon: <RiDashboard2Fill />,
+    });
+  }
+  pages.push({
+    title: t("menu.logout"),
+    url: "/logout",
+    icon: <RiLogoutBoxFill />,
+  });
+  return pages;
+};
 
+const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { i18n, t } = useTranslation();
-
-  const updateUser = async (user: User) => {
-    const pages: Page[] = [
-      { title: t("menu.home"), url: "/", icon: <RiHome2Fill /> },
-      {
-        title: t("menu.calendars"),
-        url: "/calendar",
-        icon: <BsCalendar3 />,
-      },
-      {
-        title: t("menu.mybeers"),
-        url: "/beers",
-        icon: <PiBeerSteinLight />,
-      },
-      { title: t("menu.mypage"), url: "/user", icon: <TbUser /> },
-    ];
-    if (hasAuthority(user, "user:create")) {
-      pages.push({
-        title: t("menu.users"),
-        url: "/admin/users",
-        icon: <TbUsersGroup />,
-      });
-    }
-    if (hasAuthority(user, "review:create")) {
-      pages.push({
-        title: t("menu.reviews"),
-        url: "/admin/reviews",
-        icon: <MdOutlineReviews />,
-      });
-    }
-    if (hasAuthority(user, "calendartoken:create")) {
-      pages.push({
-        title: t("menu.token"),
-        url: "/admin/tokens",
-        icon: <MdToken />,
-      });
-    }
-    if (isUserAdmin(user)) {
-      pages.push({
-        title: t("menu.allbeers"),
-        url: "/admin/beers",
-        icon: <IoBeerSharp />,
-      });
-    }
-    if (hasAuthority(user, "beerstyle:create")) {
-      pages.push({
-        title: t("menu.beerstyles"),
-        url: "/admin/beerstyles",
-        icon: <SiStyleshare />,
-      });
-    }
-    if (hasAuthority(user, "dashboard")) {
-      pages.push({
-        title: t("menu.dashboard"),
-        url: "/admin/dashboard",
-        icon: <RiDashboard2Fill />,
-      });
-    }
-    pages.push({
-      title: t("menu.logout"),
-      url: "/logout",
-      icon: <RiLogoutBoxFill />,
-    });
-    setPages(pages);
-  };
-
-  useEffect(() => {
-    (async () => {
-      if (currentUser) {
-        await updateUser(currentUser);
-      }
-    })();
-
-    return () => {};
-  }, [currentUser]);
-
-  useEffect(() => {
-    (async () => {
-      if (currentUser) {
-        await updateUser(currentUser);
-      }
-    })();
-
-    return () => {};
-  }, [i18n.language]);
+  const { t } = useTranslation();
+  const pages = buildPages(currentUser, t);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
   const drawer = (
-    <div onClick={handleDrawerToggle} className="text-center" role="button">
+    <div className="text-center">
       <ul className="divide-y divide-gray-200">
         {pages.map((page, index) => (
           <li key={`${index}-m1`} className="p-0 text-left">
-            <Link to={page.url}>{page.title}</Link>
+            <Link to={page.url} onClick={() => setMobileOpen(false)}>
+              {page.title}
+            </Link>
           </li>
         ))}
       </ul>
@@ -158,7 +139,12 @@ const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
           aria-labelledby="drawer-label"
           aria-hidden={!mobileOpen}
         >
-          <div className="absolute inset-0 bg-black opacity-50" onClick={handleDrawerToggle} role="button"></div>
+          <button
+            type="button"
+            aria-label={t("buttons.cancel")}
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={handleDrawerToggle}
+          />
           <div className="relative w-64 bg-white h-full">
             <div className="p-4">{drawer}</div>
           </div>

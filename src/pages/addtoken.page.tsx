@@ -8,7 +8,6 @@ import addTokenSchema from "@/schema/addTokenSchema";
 import { ButtonType } from "@/types/ButtonProps";
 import { handleErrorWithStatus } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -24,7 +23,18 @@ const AddTokenPage = () => {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
 
-  const [addToken, { isLoading, isSuccess, isError, error }] = useAddTokenMutation();
+  const [addTokenRequest, { isLoading }] = useAddTokenMutation();
+  const addToken = async (...args: Parameters<typeof addTokenRequest>) => {
+    const result = await addTokenRequest(...args);
+
+    if ("data" in result) {
+      navigate("/login");
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
 
   const methods = useForm<Props>({
     defaultValues: {
@@ -40,19 +50,9 @@ const AddTokenPage = () => {
     formState: { isDirty, isValid },
   } = methods;
 
-  useEffect(() => {
+  const onSubmit = async ({ email: emailValue, token }: Props) => {
     if (!isLoading) {
-      if (isSuccess) {
-        navigate("/login");
-      } else if (isError && error) {
-        handleErrorWithStatus(t, error);
-      }
-    }
-  }, [isLoading]);
-
-  const onSubmit = async ({ email, token }: Props) => {
-    if (!isLoading) {
-      addToken({ email, token });
+      addToken({ email: emailValue, token });
     }
   };
 

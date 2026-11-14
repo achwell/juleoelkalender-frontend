@@ -1,14 +1,14 @@
+import type { RowData } from "@tanstack/react-table";
 import TextFunction from "@/types/TextFunction";
-import { Column } from "@tanstack/react-table";
-import { FC } from "react";
+import { Column } from "@/components/table/tableTypes";
 
-interface Props {
+interface Props<T extends RowData> {
   t: TextFunction;
-  column: Column<any>;
+  column: Column<T>;
+  filterValue?: unknown;
 }
 
-const ActiveInvertedFilter: FC<Props> = ({ t, column }) => {
-  const columnFilterValue = column.getFilterValue();
+const ActiveInvertedFilter = <T extends RowData>({ t, column, filterValue: columnFilterValue }: Props<T>) => {
   return (
     <select
       onChange={(e) => column.setFilterValue(e.target.value)}

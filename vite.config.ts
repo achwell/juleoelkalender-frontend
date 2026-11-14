@@ -1,88 +1,54 @@
 import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react-swc";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
 import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { defineConfig, UserConfig } from "vite";
-import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
-import tsconfigPaths from "vite-tsconfig-paths";
-import { BuiltinEnvironment } from "vitest/node";
+import type { Plugin } from "vite";
+import { configDefaults, defineConfig } from "vitest/config";
+import { generateServiceWorker } from "./scripts/generate-service-worker.ts";
 
-const rootDir = fileURLToPath(new URL(".", import.meta.url));
+function serviceWorkerPlugin(): Plugin {
+  let outputDirectory: string;
 
-const pwaOptions: Partial<VitePWAOptions> = {
-  includeAssets: ["favicon.ico"],
-  manifest: {
-    name: "Juleølkalender",
-    short_name: "Juleølkalender",
-    theme_color: "#ffffff",
-    icons: [
-      {
-        src: "android-chrome-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        src: "/android-chrome-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
-    ],
+  return {
+    name: "service-worker",
+    apply: "build",
+    configResolved(config) {
+      outputDirectory = resolve(config.root, config.build.outDir);
+    },
+    async writeBundle() {
+      await generateServiceWorker(outputDirectory);
+    },
+  };
+}
+
+export default defineConfig({
+  plugins: [react(), babel({ presets: [reactCompilerPreset({ target: "19" })] }), tailwindcss(), serviceWorkerPlugin()],
+  resolve: {
+    tsconfigPaths: true,
   },
-  registerType: "autoUpdate",
-};
-const config: UserConfig | { test: { global: boolean; environment: BuiltinEnvironment } } = {
-  base: "/",
+  define: {
+    APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
   build: {
     sourcemap: process.env.SOURCE_MAP === "true",
     rolldownOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes("node_modules/@reduxjs")) {
-            return "redux";
-          }
-          if (id.includes("node_modules/redux")) {
-            return "redux";
-          }
-          if (id.includes("node_modules/reactjs-social-login")) {
-            return "auth";
-          }
-          if (id.includes("node_modules/@react-oauth")) {
-            return "auth";
-          }
-          if (id.includes("node_modules/jwt-decode")) {
-            return "auth";
-          }
-          if (id.includes("node_modules/@emotion")) {
-            return "emotion";
-          }
-          if (id.includes("node_modules/i18next")) {
-            return "i18next";
-          }
-          if (id.includes("node_modules/react")) {
-            return "react";
-          }
+        codeSplitting: {
+          // Keep dependencies used only by lazy routes out of the initial chunks.
+          groups: [
+            { name: "react", test: /\/node_modules\/(?:react|react-dom|scheduler)\// },
+            { name: "redux", test: /\/node_modules\/(?:@reduxjs\/[^/]+|redux|react-redux|redux-persist)\// },
+            { name: "auth", test: /\/node_modules\/(?:reactjs-social-login|@react-oauth\/[^/]+|jwt-decode)\// },
+            { name: "emotion", test: /\/node_modules\/@emotion\// },
+            { name: "i18next", test: /\/node_modules\/(?:i18next(?:-[^/]+)?|react-i18next)\// },
+          ].map((group) => ({ ...group, entriesAware: true })),
         },
       },
     },
   },
-  plugins: [react(), tsconfigPaths(), tailwindcss(), VitePWA(pwaOptions)],
-  define: {
-    APP_VERSION: JSON.stringify(process.env.npm_package_version),
-  },
-  resolve: {
-    alias: {
-      "@": resolve(rootDir, "./src"),
-      "@components": resolve(rootDir, "./src/components"),
-      "@pages": resolve(rootDir, "./src/pages"),
-      "@redux": resolve(rootDir, "./src/redux"),
-      "@schema": resolve(rootDir, "./src/schema"),
-      "@type": resolve(rootDir, "./src/types"),
-      "@utils": resolve(rootDir, "./src/utils"),
-    },
-  },
   test: {
-    global: true,
+    globals: true,
     environment: "happy-dom",
+    exclude: [...configDefaults.exclude, "scripts/**", "e2e/**"],
   },
-};
-export default defineConfig(config as UserConfig);
+});

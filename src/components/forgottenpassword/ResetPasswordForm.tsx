@@ -15,11 +15,13 @@ import { PasswordChangeRequest, User } from "@/types/generated";
 import { getNameOfUser, handleErrorWithStatus } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addHours, isAfter } from "date-fns";
-import { FC, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FC } from "react";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+
+const isTokenUnexpired = (created: string | Date) => isAfter(addHours(created, 1), new Date());
 
 const ResetPasswordForm: FC<{
   passwordChangeRequest: PasswordChangeRequest;
@@ -40,30 +42,31 @@ const ResetPasswordForm: FC<{
   });
   const { data: passwordChangeRequests, isFetching } = useGetPasswordChangeRequestsQuery();
   const [deletePasswordChangeRequest, { isLoading: isDeleting }] = useDeletePasswordChangeRequestMutation();
-  const [changePassword, { isLoading, isSuccess, data: user, isError, error }] = useChangePasswordMutation();
+  const [changePasswordRequest] = useChangePasswordMutation();
+  const changePassword = async (...args: Parameters<typeof changePasswordRequest>) => {
+    const result = await changePasswordRequest(...args);
+
+    if ("data" in result && result.data) {
+      handleOk(result.data);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
   const {
     formState: { errors },
     handleSubmit,
     setValue,
-    watch,
   } = methods;
-  const { showPassword } = watch();
+  const { showPassword } = useWatch({ control: methods.control });
 
   const handleOk = async (user: User) => {
     toast.success(t("pages.forgottenpassword.successmessage", { name: getNameOfUser(user) }));
     await deletePasswordChangeRequest(passwordChangeRequest.id);
     navigate("/login");
   };
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (isSuccess && user) {
-        handleOk(user);
-      } else if (isError && error) {
-        handleErrorWithStatus(t, error);
-      }
-    }
-  }, [isLoading]);
 
   const onSubmit = async (data: ForgottenpasswordProps) => {
     if (!passwordChangeRequests) {
@@ -72,9 +75,7 @@ const ResetPasswordForm: FC<{
     const { email, token } = data;
     const controlToken = passwordChangeRequests.find((d) => d.email === email && d.token === token);
     if (controlToken) {
-      const now = new Date();
-      const expires = addHours(controlToken.created, 1);
-      if (isAfter(expires, now)) {
+      if (isTokenUnexpired(controlToken.created)) {
         changePassword(data);
       } else {
         toast.error(t("pages.forgottenpassword.invalidtoken"));

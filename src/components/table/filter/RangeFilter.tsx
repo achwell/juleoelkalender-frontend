@@ -1,17 +1,23 @@
+import type { RowData } from "@tanstack/react-table";
 import DebouncedInput from "@/components/table/filter/DebouncedInput";
 import TextFunction from "@/types/TextFunction";
-import { Column } from "@tanstack/react-table";
-import { FC } from "react";
+import { Column } from "@/components/table/tableTypes";
 
-interface Props {
+interface Props<T extends RowData> {
   t: TextFunction;
-  column: Column<any>;
+  column: Column<T>;
+  filterValue?: unknown;
   minValue?: number;
   maxValue?: number;
 }
 
-const RangeFilter: FC<Props> = ({ t, column, minValue, maxValue }) => {
-  const columnFilterValue = column.getFilterValue();
+const RangeFilter = <T extends RowData>({
+  t,
+  column,
+  minValue,
+  maxValue,
+  filterValue: columnFilterValue,
+}: Props<T>) => {
   return (
     <div>
       <div className="flex space-x-2 flex-col">

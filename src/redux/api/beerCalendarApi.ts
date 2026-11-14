@@ -1,7 +1,5 @@
-import { BASE_URL } from "@/environment";
-import { RootState } from "@/redux/store";
 import { BeerCalendar, Direction } from "@/types/generated";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "@/redux/api/baseApi";
 
 export interface MoveCalendar {
   calendarId: string;
@@ -9,23 +7,12 @@ export interface MoveCalendar {
   direction: Direction;
 }
 
-export const beerCalendarApi = createApi({
-  reducerPath: "beerCalendarApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/api/v1/beercalendar`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).authState.token;
-      headers.set("Access-Control-Allow-Headers", "content-type, x-requested-with");
-      headers.set("authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ["Beer", "Review", "Calendar", "User"],
+export const beerCalendarApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBeerCalendars: builder.query<BeerCalendar[], void>({
       query: () => {
         return {
-          url: "",
+          url: "/api/v1/beercalendar",
           credentials: "include",
         };
       },
@@ -34,7 +21,7 @@ export const beerCalendarApi = createApi({
     getBeerCalendar: builder.query<BeerCalendar, string>({
       query: (id) => {
         return {
-          url: `/${id}`,
+          url: `/api/v1/beercalendar/${id}`,
           credentials: "include",
         };
       },
@@ -42,7 +29,7 @@ export const beerCalendarApi = createApi({
     }),
     addBeerCalendar: builder.mutation<BeerCalendar, Partial<BeerCalendar>>({
       query: (body) => ({
-        url: "",
+        url: "/api/v1/beercalendar",
         credentials: "include",
         method: "POST",
         body,
@@ -51,7 +38,7 @@ export const beerCalendarApi = createApi({
     }),
     moveBeerCalendars: builder.mutation<void, MoveCalendar>({
       query: ({ calendarId, day, direction }) => ({
-        url: `/move/${calendarId}/${day}/${direction}`,
+        url: `/api/v1/beercalendar/move/${calendarId}/${day}/${direction}`,
         credentials: "include",
         method: "POST",
         body: {},
@@ -60,7 +47,7 @@ export const beerCalendarApi = createApi({
     }),
     updateBeerCalendar: builder.mutation<BeerCalendar, Pick<BeerCalendar, "id"> & Partial<BeerCalendar>>({
       query: ({ id, ...patch }) => ({
-        url: `/${id}`,
+        url: `/api/v1/beercalendar/${id}`,
         credentials: "include",
         method: "PUT",
         body: patch,
@@ -82,7 +69,7 @@ export const beerCalendarApi = createApi({
     deleteBeerCalendar: builder.mutation<{ success: boolean; id: string }, string>({
       query(id) {
         return {
-          url: `/${id}`,
+          url: `/api/v1/beercalendar/${id}`,
           credentials: "include",
           method: "DELETE",
         };

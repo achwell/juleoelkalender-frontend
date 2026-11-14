@@ -14,7 +14,7 @@ import { useGetCalendarQuery, useGetCalendarsQuery, useGetCalendarWithBeersQuery
 import ButtonProps, { ButtonType } from "@/types/ButtonProps";
 import { Beer, BeerCalendar, CalendarWithBeer, RoleName } from "@/types/generated";
 import { findFirstAvailableDay, handleErrorWithStatus } from "@/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
@@ -27,24 +27,44 @@ const CalendarDetailsPage = () => {
   const { data: allBeerCalendars, refetch: refetchBeerCalendars } = useGetBeerCalendarsQuery();
   const { refetch: refetchCalendars } = useGetCalendarsQuery();
   const { data: calendar, isFetching: isFetchingCalendar, refetch: refetchCalendar } = useGetCalendarQuery(id ?? "");
-  const [
-    addBeerCalendar,
-    {
-      isLoading: isAddingBeerCalendar,
-      isSuccess: isSuccessAdding,
-      data: dataAdding,
-      isError: isErrorAdding,
-      error: errorAdding,
-    },
-  ] = useAddBeerCalendarMutation();
-  const [
-    moveBeerCalendars,
-    { isLoading: isMovingBeerCalendar, isSuccess: isSuccessMoving, isError: isErrorMoving, error: errorMoving },
-  ] = useMoveBeerCalendarsMutation();
+  const [addBeerCalendarRequest, { isLoading: isAddingBeerCalendar }] = useAddBeerCalendarMutation();
+  const addBeerCalendar = async (...args: Parameters<typeof addBeerCalendarRequest>) => {
+    const result = await addBeerCalendarRequest(...args);
+
+    if ("data" in result && result.data) {
+      setShowAddDialog(false);
+      refreshData().then(() => {
+        toast.success(
+          t("pages.calendar.admin.beeradded", {
+            year: calendar?.year,
+            calendar: calendar?.name,
+            day: result.data?.day,
+          }),
+        );
+      });
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const [moveBeerCalendarsRequest] = useMoveBeerCalendarsMutation();
+  const moveBeerCalendars = async (...args: Parameters<typeof moveBeerCalendarsRequest>) => {
+    const result = await moveBeerCalendarsRequest(...args);
+
+    if ("data" in result) {
+      refreshData();
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
 
   const { data: allBeers, refetch: refetchBeers } = useGetBeersQuery();
 
-  const { data: cwb, isFetching: isFetchingCW, refetch: refetchCwb } = useGetCalendarWithBeersQuery(id ?? "");
+  const { data: cwb, refetch: refetchCwb } = useGetCalendarWithBeersQuery(id ?? "");
 
   const move = async (data: MoveCalendar) => {
     await moveBeerCalendars(data);
@@ -67,10 +87,9 @@ const CalendarDetailsPage = () => {
     addBeerCalendar(beerCalendar);
   };
 
-  const [calendarWithBeers, setCalendarWithBeers] = useState<CalendarWithBeer[]>([]);
-  const [availableBeers, setAvailableBeers] = useState<Beer[]>([]);
-  const [occupiedDays, setOccupiedDays] = useState<number[]>([]);
-  const [initialDay, setInitialDay] = useState(1);
+  const [openedAt] = useState(() => new Date());
+  const occupiedDays = calendar?.beerCalendars?.map((bc) => bc.day) ?? [];
+  const initialDay = findFirstAvailableDay(occupiedDays);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   const refreshData = async () => {
@@ -82,118 +101,85 @@ const CalendarDetailsPage = () => {
   };
 
   useEffect(() => {
-    setInitialDay(findFirstAvailableDay(occupiedDays));
-  }, [occupiedDays]);
+    if (!calendar && !isFetchingCalendar) navigate("/404");
+  }, [calendar, isFetchingCalendar, navigate]);
 
-  useEffect(() => {
-    if (!isAddingBeerCalendar) {
-      if (isSuccessAdding && dataAdding) {
-        setShowAddDialog(false);
-        refreshData().then(() => {
-          toast.success(
-            t("pages.calendar.admin.beeradded", {
-              year: calendar?.year,
-              calendar: calendar?.name,
-              day: dataAdding.day,
-            }),
-          );
-        });
-      } else if (isErrorAdding && errorAdding) {
-        handleErrorWithStatus(t, errorAdding);
-      }
-    }
-  }, [isAddingBeerCalendar]);
-
-  useEffect(() => {
-    if (!isMovingBeerCalendar) {
-      if (isSuccessMoving) {
-        refreshData();
-      } else if (isErrorMoving && errorMoving) {
-        handleErrorWithStatus(t, errorMoving);
-      }
-    }
-  }, [isMovingBeerCalendar]);
-
-  useEffect(() => {
-    if (!calendar) {
-      if (!isFetchingCalendar) {
-        navigate("/404");
-      }
-    } else if (cwb && allBeers) {
-      const beers = Array.from(new Array(24).keys())
-        .map((day) => {
-          const beer: Beer = {
+  const { calendarWithBeers, availableBeers } = useMemo<{
+    calendarWithBeers: CalendarWithBeer[];
+    availableBeers: Beer[];
+  }>(() => {
+    if (!calendar || !cwb || !allBeers) return { calendarWithBeers: [], availableBeers: [] };
+    const beers = Array.from({ length: 24 }, (_, index) => index)
+      .map((day) => {
+        const beer: Beer = {
+          id: "N/A",
+          name: "N/A",
+          archived: false,
+          bottleDate: openedAt,
+          brewedDate: openedAt,
+          createdDate: openedAt,
+          brewer: {
             id: "N/A",
-            name: "N/A",
-            archived: false,
-            bottleDate: new Date(),
-            brewedDate: new Date(),
-            createdDate: new Date(),
-            brewer: {
-              id: "N/A",
-              firstName: "",
-              lastName: "",
-              email: "",
-              password: "",
-              role: {
-                id: "",
-                name: RoleName.ROLE_USER,
-                authorities: [],
-                authority: RoleName.ROLE_USER,
-              },
-              calendarToken: [],
-              createdDate: new Date(),
-              locked: false,
-              imageSilhouette: false,
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            role: {
+              id: "",
+              name: RoleName.ROLE_USER,
+              authorities: [],
+              authority: RoleName.ROLE_USER,
             },
-            reviews: [],
-            style: "",
-            desiredDate: undefined,
-            description: "",
-            abv: 0,
-            ibu: 0,
-            ebc: 0,
-            recipe: undefined,
-            untapped: undefined,
-          };
-          return {
-            ...calendar,
-            id: "N/A",
-            day: day + 1,
-            beer,
-          };
-        })
-        .map((value) => {
-          const day = value.day;
-          const existingBeer = cwb.find((c) => c.day === day);
-          return existingBeer ?? value;
-        });
-      const calendars = [...beers];
-      calendars.sort((a, b) => a.day - b.day);
-      setCalendarWithBeers(calendars);
-      const taken = new Set(
-        calendars
-          .map((value) => value.beer.id)
-          .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index),
-      );
-      const ab = allBeers
-        .filter((value) => !value.archived)
-        .filter((value) => !taken.has(value.id))
-        .toSorted((a, b) => {
-          const nameA = a.name.toUpperCase();
-          const nameB = b.name.toUpperCase();
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
-        });
-      setAvailableBeers(ab);
-      setOccupiedDays(calendar.beerCalendars ? calendar.beerCalendars.map((bc) => bc.day) : []);
-    }
-  }, [calendar, isFetchingCalendar, isFetchingCW, cwb, allBeers, navigate]);
+            calendarToken: [],
+            createdDate: openedAt,
+            locked: false,
+            imageSilhouette: false,
+          },
+          reviews: [],
+          style: "",
+          desiredDate: undefined,
+          description: "",
+          abv: 0,
+          ibu: 0,
+          ebc: 0,
+          recipe: undefined,
+          untapped: undefined,
+        };
+        return {
+          ...calendar,
+          id: "N/A",
+          day: day + 1,
+          beer,
+        };
+      })
+      .map((value) => {
+        const day = value.day;
+        const existingBeer = cwb.find((c) => c.day === day);
+        return existingBeer ?? value;
+      });
+    const calendars = [...beers];
+    calendars.sort((a, b) => a.day - b.day);
+    const taken = new Set(
+      calendars
+        .map((value) => value.beer.id)
+        .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index),
+    );
+    const ab = allBeers
+      .filter((value) => !value.archived)
+      .filter((value) => !taken.has(value.id))
+      .toSorted((a, b) => {
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        return 0;
+      });
+    return { calendarWithBeers: calendars, availableBeers: ab };
+  }, [calendar, cwb, allBeers, openedAt]);
 
   const buttons: ButtonProps[] = [
     {

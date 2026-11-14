@@ -21,7 +21,7 @@ const LoginPage = () => {
     if (currentUser) {
       navigate("/");
     }
-  }, [currentUser]);
+  }, [currentUser, navigate]);
 
   useEffect(() => {
     const styles = (allBeersStyles ?? [])
@@ -38,7 +38,7 @@ const LoginPage = () => {
         return 0;
       });
     dispatch(setBeerStyles(styles));
-  }, [allBeersStyles]);
+  }, [allBeersStyles, dispatch]);
 
   return (
     <main className="max-w-xs mx-auto px-4">

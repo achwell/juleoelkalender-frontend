@@ -14,8 +14,8 @@ import { ButtonType } from "@/types/ButtonProps";
 import { Beer, User } from "@/types/generated";
 import { handleErrorWithStatus } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC, useEffect } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { FC } from "react";
+import { FormProvider, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const { currentUser } = useAppSelector((state) => state.authState);
   const { beerStyles } = useAppSelector((state) => state.beerStylesState);
   const navigate = useNavigate();
@@ -42,25 +42,35 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
     handleSubmit,
     formState: { isDirty },
     setValue,
-    watch,
   } = methods;
 
-  const { desiredDate } = watch();
+  const { desiredDate } = useWatch({ control: methods.control });
 
-  const [
-    addBeer,
-    { isLoading: isAdding, isSuccess: isSuccessAdd, data: newBeer, isError: isAddError, error: addError },
-  ] = useAddBeerMutation();
-  const [
-    updateBeer,
-    {
-      isLoading: isUpdating,
-      isSuccess: isSuccessUpdate,
-      data: updatedBeer,
-      isError: isUpdateError,
-      error: updateError,
-    },
-  ] = useUpdateBeerMutation();
+  const [addBeerRequest, { isLoading: isAdding }] = useAddBeerMutation();
+  const addBeer = async (...args: Parameters<typeof addBeerRequest>) => {
+    const result = await addBeerRequest(...args);
+
+    if ("data" in result && result.data) {
+      addNewBeer(result.data);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
+
+  const [updateBeerRequest, { isLoading: isUpdating }] = useUpdateBeerMutation();
+  const updateBeer = async (...args: Parameters<typeof updateBeerRequest>) => {
+    const result = await updateBeerRequest(...args);
+
+    if ("data" in result && result.data) {
+      updateExistingBeer(result.data);
+    } else if ("error" in result && result.error) {
+      handleErrorWithStatus(t, result.error);
+    }
+
+    return result;
+  };
 
   const addNewBeer = (newBeer: Beer) => {
     if (user && currentUser && user.id === currentUser.id) {
@@ -100,32 +110,6 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
       relative: "route",
     });
   };
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isAdding) {
-        if (isSuccessAdd && newBeer) {
-          addNewBeer(newBeer);
-        } else if (isAddError && addError) {
-          handleErrorWithStatus(t, addError);
-        }
-      }
-    };
-    finish();
-  }, [isAdding, isSuccessAdd, isAddError]);
-
-  useEffect(() => {
-    const finish = async () => {
-      if (!isUpdating) {
-        if (isSuccessUpdate && updatedBeer) {
-          updateExistingBeer(updatedBeer);
-        } else if (isUpdateError && updateError) {
-          handleErrorWithStatus(t, updateError);
-        }
-      }
-    };
-    finish();
-  }, [isUpdating, isSuccessUpdate, isUpdateError, i18n.language]);
 
   const create = (beerInput: Partial<Beer>) => {
     /* eslint-disable @typescript-eslint/no-unused-vars */
