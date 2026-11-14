@@ -1,0 +1,101 @@
+name: Release frontend
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-frontend
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run this workflow from main."
+          exit 1
+
+      - uses: actions/checkout@v5.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6.0.0
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Determine release versions
+        id: versions
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+
+          with open("package.json") as package:
+              current = json.load(package)["version"]
+          match = re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)-SNAPSHOT", current)
+          if not match:
+              raise SystemExit(f"Expected a MAJOR.MINOR.PATCH-SNAPSHOT version, got {current!r}")
+          major, minor, patch = match.groups()
+          release = f"{major}.{minor}.{patch}"
+          next_version = f"{major}.{minor}.{int(patch) + 1}-SNAPSHOT"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"release={release}", file=output)
+              print(f"next={next_version}", file=output)
+          PY
+      - name: Check release tag
+        env:
+          RELEASE_VERSION: ${{ steps.versions.outputs.release }}
+        run: |
+          if git rev-parse --verify --quiet "refs/tags/version/$RELEASE_VERSION"; then
+            echo "::error::Release tag already exists."
+            exit 1
+          fi
+
+      - name: Set release version
+        env:
+          RELEASE_VERSION: ${{ steps.versions.outputs.release }}
+        run: npm version "$RELEASE_VERSION" --no-git-tag-version --ignore-scripts
+
+      - name: Commit and tag release
+        env:
+          RELEASE_VERSION: ${{ steps.versions.outputs.release }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "Release $RELEASE_VERSION"
+          git tag "version/$RELEASE_VERSION"
+
+      - name: Install, test and build release
+        run: |
+          npm ci
+          npm test
+          npm run build
+          cd dist
+          zip -qr "../frontend-${{ steps.versions.outputs.release }}.zip" .
+
+      - name: Advance development version and push
+        env:
+          RELEASE_VERSION: ${{ steps.versions.outputs.release }}
+          NEXT_VERSION: ${{ steps.versions.outputs.next }}
+        run: |
+          npm version "$NEXT_VERSION" --no-git-tag-version --ignore-scripts
+          git add package.json package-lock.json
+          git commit -m "Start $NEXT_VERSION"
+          git push --atomic origin HEAD:refs/heads/main "refs/tags/version/$RELEASE_VERSION"
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.versions.outputs.release }}
+        run: |
+          gh release create "version/$RELEASE_VERSION" \
+            "frontend-$RELEASE_VERSION.zip" \
+            --verify-tag --title "Frontend $RELEASE_VERSION" --generate-notes
