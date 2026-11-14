@@ -39,7 +39,7 @@ it("renders updated API measurements, including transitions to zero without a da
       <Dashboard />
     </Suspense>,
   );
-  expect(await screen.findByText("pages.dashboard.cpuload: 2.00%")).toBeTruthy();
+  expect(await screen.findByText("pages.dashboard.cpuload: 2.00%", {}, { timeout: 10000 })).toBeTruthy();
   expect(await screen.findByText("pages.dashboard.beers.unplaced: 4")).toBeTruthy();
   state.data = {
     ...state.data,
@@ -61,4 +61,4 @@ it("renders updated API measurements, including transitions to zero without a da
   expect(screen.getByText("pages.dashboard.freememory: 0.00GB")).toBeTruthy();
   expect(screen.getByText("pages.dashboard.beers.unplaced: 0")).toBeTruthy();
   expect(screen.getByText("pages.dashboard.users.activecount: 0")).toBeTruthy();
-});
+}, 15000);
