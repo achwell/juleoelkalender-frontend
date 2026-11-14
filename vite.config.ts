@@ -49,6 +49,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "happy-dom",
+    pool: "vmThreads",
     exclude: [...configDefaults.exclude, "scripts/**", "e2e/**"],
   },
 });
