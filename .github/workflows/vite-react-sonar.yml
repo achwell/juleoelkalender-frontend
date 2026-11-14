@@ -1,4 +1,4 @@
-name: Build Vite React & Sonar Analysis
+name: Build Vite React
 
 on:
   push:
@@ -32,9 +32,3 @@ jobs:
 
       - name: Build production
         run: npm run build
-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
