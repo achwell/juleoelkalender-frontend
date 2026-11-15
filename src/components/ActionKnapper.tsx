@@ -37,10 +37,7 @@ const ActionKnapper: FC<Props> = ({ id = "", buttons }) => {
         {buttons
           .filter((b) => !!b)
           .map((button, index) => {
-            if (!button) {
-              return null;
-            }
-            if (button.hidden) {
+            if (!button || button.hidden) {
               return null;
             }
             switch (button.icon) {
@@ -82,7 +79,7 @@ const ActionKnapper: FC<Props> = ({ id = "", buttons }) => {
         {buttons
           .filter((b) => !!b)
           .map((button, index) => {
-            if (!button) {
+            if (!button || button.hidden) {
               return null;
             }
             const { icon, text } = button;
@@ -108,7 +105,7 @@ const ActionKnapper: FC<Props> = ({ id = "", buttons }) => {
               case ButtonType.REVIEWS:
                 return getIconButton(index, button, <MdOutlineReviews title={text ?? t("buttons.reviews")} />);
               case ButtonType.SUBMIT:
-                return getIconButton(index, button, <RiSaveLine title={text ?? t("buttons.submit")} />);
+                return getIconSubmitButton(index, button, <RiSaveLine title={text ?? t("buttons.submit")} />);
               case ButtonType.VIEW:
                 return getIconButton(index, button, <MdVisibility title={text ?? t("buttons.view")} />);
               case ButtonType.UNLOCK:

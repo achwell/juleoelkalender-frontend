@@ -1,6 +1,8 @@
+/* oxlint-disable jsx-a11y/prefer-tag-over-role */
+// The editable combobox uses custom listbox and option roles.
 import FormInputProps from "@/types/FormInputProps";
 import { clsx } from "clsx";
-import { JSX, useEffect, useRef, useState } from "react";
+import { JSX, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 
 const InputAutocomplete = <TFormValues extends Record<string, unknown>>({
@@ -19,6 +21,7 @@ const InputAutocomplete = <TFormValues extends Record<string, unknown>>({
   const { control } = useFormContext();
 
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { field, fieldState } = useController({ name: fieldName, control, rules });
@@ -26,14 +29,49 @@ const InputAutocomplete = <TFormValues extends Record<string, unknown>>({
   const { error } = fieldState;
   const errorMessages = error ? (validateErrorMessage ?? error.message) : undefined;
   const hasError = !!errorMessages;
+  const errorId = `${name}-error`;
+  const optionsId = `${name}-options`;
 
   const handleOptionClick = (option: string) => {
     onChange(option);
+    callback?.(option);
     setOpen(false);
     onBlur();
   };
 
   const filteredOptions = options.filter((opt) => opt.toLowerCase().includes(String(value ?? "").toLowerCase()));
+  const selectedIndex = Math.min(activeIndex, filteredOptions.length - 1);
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (!open || filteredOptions.length === 0) {
+      if (event.key === "ArrowDown" && filteredOptions.length > 0) {
+        event.preventDefault();
+        setOpen(true);
+        setActiveIndex(0);
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        setActiveIndex((index) => (index + 1) % filteredOptions.length);
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        setActiveIndex((index) => (index - 1 + filteredOptions.length) % filteredOptions.length);
+        break;
+      case "Enter":
+        if (selectedIndex >= 0) {
+          event.preventDefault();
+          handleOptionClick(filteredOptions[selectedIndex]);
+        }
+        break;
+      case "Escape":
+        event.preventDefault();
+        setOpen(false);
+        break;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -76,8 +114,15 @@ const InputAutocomplete = <TFormValues extends Record<string, unknown>>({
           required={required}
           name={name}
           id={name}
-          onChange={onChange}
-          onFocus={() => setOpen(true)}
+          onChange={(event) => {
+            onChange(event);
+            setActiveIndex(0);
+          }}
+          onFocus={() => {
+            setOpen(true);
+            setActiveIndex(0);
+          }}
+          onKeyDown={handleKeyDown}
           onBlur={(e) => {
             if (callback) {
               callback(e.target.value);
@@ -95,7 +140,13 @@ const InputAutocomplete = <TFormValues extends Record<string, unknown>>({
             { "bg-gray-100 cursor-not-allowed": disabled },
           )}
           aria-invalid={hasError}
-          aria-errormessage={errorMessages}
+          aria-errormessage={hasError ? errorId : undefined}
+          aria-describedby={hasError ? errorId : undefined}
+          aria-autocomplete="list"
+          aria-expanded={open && filteredOptions.length > 0}
+          aria-controls={open && filteredOptions.length > 0 ? optionsId : undefined}
+          aria-activedescendant={open && selectedIndex >= 0 ? `${optionsId}-${selectedIndex}` : undefined}
+          role="combobox"
           autoComplete="off"
         />
         {endAdornment && (
@@ -103,21 +154,35 @@ const InputAutocomplete = <TFormValues extends Record<string, unknown>>({
         )}
       </div>
       {open && filteredOptions.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 shadow-lg">
-          {filteredOptions.map((opt) => (
-            <li key={opt}>
-              <button
-                type="button"
-                onClick={() => handleOptionClick(opt)}
-                className="w-full text-left cursor-pointer px-4 py-2 hover:bg-indigo-100"
-              >
-                {opt}
-              </button>
-            </li>
+        <div
+          id={optionsId}
+          role="listbox"
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white border border-gray-200 shadow-lg"
+        >
+          {filteredOptions.map((opt, index) => (
+            <div
+              key={opt}
+              id={`${optionsId}-${index}`}
+              role="option"
+              aria-selected={selectedIndex === index}
+              onPointerDown={(event) => {
+                event.preventDefault();
+                handleOptionClick(opt);
+              }}
+              className={clsx("cursor-pointer px-4 py-2", {
+                "bg-indigo-100": selectedIndex === index,
+              })}
+            >
+              {opt}
+            </div>
           ))}
-        </ul>
+        </div>
       )}
-      {hasError && errorMessages && <p className="mt-2 text-sm text-red-600">{errorMessages}</p>}
+      {hasError && errorMessages && (
+        <p id={errorId} role="alert" className="mt-2 text-sm text-red-600">
+          {errorMessages}
+        </p>
+      )}
     </div>
   );
 };

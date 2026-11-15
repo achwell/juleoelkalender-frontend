@@ -1,7 +1,7 @@
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import { User } from "@/types/generated";
 import { hasAuthority, isUserAdmin } from "@/utils";
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BsCalendar3 } from "react-icons/bs";
 import { IoBeerSharp } from "react-icons/io5";
@@ -85,9 +85,24 @@ const buildPages = (user: User, t: (key: string) => string) => {
 
 const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const { t } = useTranslation();
   const pages = buildPages(currentUser, t);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -96,8 +111,8 @@ const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
   const drawer = (
     <div className="text-center">
       <ul className="divide-y divide-gray-200">
-        {pages.map((page, index) => (
-          <li key={`${index}-m1`} className="p-0 text-left">
+        {pages.map((page) => (
+          <li key={page.url} className="p-0 text-left">
             <Link to={page.url} onClick={() => setMobileOpen(false)}>
               {page.title}
             </Link>
@@ -116,15 +131,19 @@ const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
       <header className="fixed top-0 left-0 w-full pl-16 bg-blue-600 shadow-md z-50">
         <div className="flex px-0 py-2">
           <button
-            aria-label="open drawer"
+            ref={menuButtonRef}
+            type="button"
+            aria-label={t("menu.menu", { defaultValue: "Menu" })}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
             className="absolute left-0 top-0 z-50 p-0 m-1 text-white bg-transparent border-0 rounded focus:outline-none md:hidden lg:hidden xl:hidden"
             onClick={handleDrawerToggle}
           >
             <RiMenu2Fill />
           </button>
           <div className="hidden md:flex flex-row">
-            {pages.map((page, index) => (
-              <Link key={`${index}-m2`} to={page.url} className="pr-4 text-white menuLink">
+            {pages.map((page) => (
+              <Link key={page.url} to={page.url} className="pr-4 text-white menuLink">
                 {!!page.icon && page.icon}
                 <div className="hidden xl:flex">{page.title}</div>
               </Link>
@@ -133,11 +152,11 @@ const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
           <LanguageSelector />
         </div>
       </header>
-      <nav className="bg-gray-800 p-4">
-        <dialog
-          className={`lg:hidden fixed inset-0 z-50 transform ${mobileOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out`}
-          aria-labelledby="drawer-label"
-          aria-hidden={!mobileOpen}
+      {mobileOpen && (
+        <nav
+          id="mobile-navigation"
+          aria-label={t("menu.menu", { defaultValue: "Menu" })}
+          className="md:hidden fixed inset-0 z-50"
         >
           <button
             type="button"
@@ -148,8 +167,8 @@ const Navigation: FC<{ currentUser: User }> = ({ currentUser }) => {
           <div className="relative w-64 bg-white h-full">
             <div className="p-4">{drawer}</div>
           </div>
-        </dialog>
-      </nav>
+        </nav>
+      )}
     </>
   );
 };

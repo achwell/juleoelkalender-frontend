@@ -18,7 +18,7 @@ const reviewWithoutChildrenSchema = (t: TextFunction) =>
         .date()
         .min(new Date("1900-01-01"), { error: t("validation.required", { field: t("review.createdAt") }) }),
       ratingLabel: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z
           .number()
           .int()
@@ -26,35 +26,35 @@ const reviewWithoutChildrenSchema = (t: TextFunction) =>
           .max(5, { error: t("validation.maxvalue", { field: t("rating.label"), number: 5 }) }),
       ),
       ratingLooks: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z
           .number()
           .positive(t("validation.positive"))
           .max(3, { error: t("validation.maxvalue", { field: t("rating.looks"), number: 3 }) }),
       ),
       ratingTaste: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z
           .number()
           .positive(t("validation.positive"))
           .max(20, { error: t("validation.maxvalue", { field: t("rating.taste"), number: 20 }) }),
       ),
       ratingSmell: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z
           .number()
           .positive(t("validation.positive"))
           .max(12, { error: t("validation.maxvalue", { field: t("rating.smell"), number: 12 }) }),
       ),
       ratingFeel: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z
           .number()
           .positive(t("validation.positive"))
           .max(5, { error: t("validation.maxvalue", { field: t("rating.feel"), number: 5 }) }),
       ),
       ratingOverall: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z
           .number()
           .positive(t("validation.positive"))

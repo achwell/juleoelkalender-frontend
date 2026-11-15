@@ -116,15 +116,16 @@ export const getErrorContainedButton = (
 };
 
 export const getIconButton = (index: number, { disabled, onClick, type }: ButtonProps, icon: JSX.Element) => {
-  return onClick && !disabled
-    ? getIconButtonWithOnClick(index, type ?? "button", onClick, icon)
-    : getIconButtonNoOnClick(index, type ?? "button", icon);
+  return onClick
+    ? getIconButtonWithOnClick(index, type ?? "button", onClick, icon, !!disabled)
+    : getIconButtonNoOnClick(index, type ?? "button", icon, !!disabled);
 };
 
 export const getIconSubmitButton = (index: number, { disabled, onClick, type }: ButtonProps, icon: JSX.Element) => {
-  return onClick && !disabled
-    ? getIconButtonWithOnClick(index, type ?? "submit", type === "submit" ? undefined : onClick, icon)
-    : getIconButtonNoOnClick(index, type ?? "submit", icon);
+  const resolvedType = type ?? "submit";
+  return onClick && resolvedType !== "submit"
+    ? getIconButtonWithOnClick(index, resolvedType, onClick, icon, !!disabled)
+    : getIconButtonNoOnClick(index, resolvedType, icon, !!disabled);
 };
 
 const getButton = (
@@ -236,6 +237,7 @@ const getIconButtonWithOnClick = (
   type: BtnType,
   onClick: (() => void) | undefined,
   content: JSX.Element,
+  disabled: boolean,
 ) => {
   return (
     <button
@@ -243,18 +245,20 @@ const getIconButtonWithOnClick = (
       className="px-3 py-1 border border-blue-500 text-blue-500 bg-transparent rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
       type={type}
       onClick={onClick}
+      disabled={disabled}
     >
       {content}
     </button>
   );
 };
 
-const getIconButtonNoOnClick = (index: number, type: BtnType, content: JSX.Element) => {
+const getIconButtonNoOnClick = (index: number, type: BtnType, content: JSX.Element, disabled: boolean) => {
   return (
     <button
       key={`i-${index}`}
       className="px-3 py-1 border border-blue-500 text-blue-500 bg-transparent rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
       type={type}
+      disabled={disabled}
     >
       {content}
     </button>

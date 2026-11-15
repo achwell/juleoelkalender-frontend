@@ -5,11 +5,11 @@ import ModalDialog from "@/components/ModalDialog";
 import beerCalendarSchema from "@/schema/beerCalendarSchema";
 import { ButtonType } from "@/types/ButtonProps";
 import { Beer, BeerCalendar, Calendar } from "@/types/generated";
-import { Resolver } from "@hookform/resolvers/ajv";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 
 interface Props {
   calendar: Calendar;
@@ -34,20 +34,34 @@ const AddBeerModal = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const defaultValues = {
+  const schema = beerCalendarSchema(t, occupiedDays).extend({
+    beerId: z.string().transform((id, context) => {
+      const beer = beers.find((option) => option.id === id);
+      if (!beer) {
+        context.addIssue({
+          code: "custom",
+          message: t("validation.required", { field: t("pages.calendar.admin.addbeermodal.choosebeer") }),
+        });
+        return z.NEVER;
+      }
+      return beer;
+    }),
+  });
+  type BeerCalendarFormInput = z.input<typeof schema>;
+  type BeerCalendarFormOutput = z.output<typeof schema>;
+
+  const defaultValues: BeerCalendarFormInput = {
     id: "N/A",
     calendar,
     day: initialDay,
-    beer: undefined,
+    beer: beers[0],
+    beerId: beers[0]?.id ?? "",
   };
 
-  const schema = beerCalendarSchema(t, occupiedDays);
-  // @ts-ignore
-  const resolver: Resolver<BeerCalendar> = zodResolver(schema);
-  const methods = useForm<BeerCalendar>({
+  const methods = useForm<BeerCalendarFormInput, unknown, BeerCalendarFormOutput>({
     defaultValues,
     mode: "onChange",
-    resolver: resolver,
+    resolver: zodResolver(schema),
   });
   const { handleSubmit, reset } = methods;
 
@@ -58,12 +72,14 @@ const AddBeerModal = ({
         calendar,
         day: initialDay,
         beer: beers[0],
+        beerId: beers[0]?.id ?? "",
       });
     }
   }, [beers, calendar, initialDay, reset]);
 
-  const addBeer = (data: BeerCalendar) => {
-    callback({ ...data, id: "" });
+  const addBeer = (data: BeerCalendarFormOutput) => {
+    const { beerId, ...beerCalendar } = data;
+    callback({ ...beerCalendar, beer: beerId, id: "" });
     reset();
   };
 

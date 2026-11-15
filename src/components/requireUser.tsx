@@ -21,19 +21,24 @@ const RequireUser = ({ requiredAutorities }: { requiredAutorities: string[] }) =
   const { currentUser, token } = useAppSelector((state) => state.authState);
 
   useEffect(() => {
-    const logout = async () => {
+    if (!token) {
+      return;
+    }
+
+    let tokenIsValid = false;
+    try {
+      const decodedJwt = jwtDecode<JwtToken>(token);
+      tokenIsValid = decodedJwt.exp * 1000 >= Date.now();
+    } catch {
+      tokenIsValid = false;
+    }
+
+    if (!tokenIsValid) {
       dispatch(setCurrentUser(null));
       dispatch(setToken(null));
-      navigate("/logout");
-    };
-
-    if (token) {
-      const decodedJwt: JwtToken = jwtDecode(token);
-      if (!(decodedJwt && decodedJwt.exp * 1000 >= new Date().getTime())) {
-        logout().catch(console.error);
-      }
+      navigate("/login", { replace: true, state: { from: location } });
     }
-  }, [token, dispatch, navigate]);
+  }, [token, dispatch, location, navigate]);
 
   const hasRights = (user: User) => {
     return requiredAutorities.some(

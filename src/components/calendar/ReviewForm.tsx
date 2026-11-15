@@ -7,28 +7,18 @@ import reviewWithoutChildrenSchema from "@/schema/reviewWithoutChildrenSchema";
 import { ButtonType } from "@/types/ButtonProps";
 import { Review } from "@/types/generated";
 import { handleErrorWithStatus } from "@/utils";
-import { Resolver } from "@hookform/resolvers/ajv";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { z } from "zod";
 
 interface Props {
   review: Review;
   callback: () => void;
   from?: string | null;
-}
-
-interface ReviewProps {
-  ratingLabel: number;
-  ratingLooks: number;
-  ratingSmell: number;
-  ratingTaste: number;
-  ratingFeel: number;
-  ratingOverall: number;
-  comment?: string;
 }
 
 const ReviewForm: FC<Props> = ({ review, callback, from }) => {
@@ -49,7 +39,7 @@ const ReviewForm: FC<Props> = ({ review, callback, from }) => {
     return result;
   };
 
-  const [updateReviewRequest, { isLoading: isUppdating }] = useUpdateReviewMutation();
+  const [updateReviewRequest, { isLoading: isUpdating }] = useUpdateReviewMutation();
   const updateReview = async (...args: Parameters<typeof updateReviewRequest>) => {
     const result = await updateReviewRequest(...args);
 
@@ -63,18 +53,23 @@ const ReviewForm: FC<Props> = ({ review, callback, from }) => {
 
     return result;
   };
+  const isSaving = isAdding || isUpdating;
 
   const schema = reviewWithoutChildrenSchema(t);
-  // @ts-ignore
-  const resolver: Resolver<ReviewProps> = zodResolver(schema);
-  const methods = useForm<ReviewProps>({
+  type ReviewFormInput = z.input<typeof schema>;
+  type ReviewFormOutput = z.output<typeof schema>;
+  const methods = useForm<ReviewFormInput, unknown, ReviewFormOutput>({
     defaultValues: review,
     mode: "onChange",
-    resolver: resolver,
+    resolver: zodResolver(schema),
   });
   const { handleSubmit } = methods;
 
-  const onSubmit = async (submitData: ReviewProps) => {
+  const onSubmit: SubmitHandler<ReviewFormOutput> = async (submitData) => {
+    if (isSaving) {
+      return;
+    }
+
     const data = {
       id: review.id,
       createdAt: review.createdAt,
@@ -168,9 +163,10 @@ const ReviewForm: FC<Props> = ({ review, callback, from }) => {
             buttons={[
               {
                 icon: ButtonType.SUBMIT,
-                text: (isAdding ?? isUppdating) ? t("buttons.saving") : t("buttons.save"),
+                text: isSaving ? t("buttons.saving") : t("buttons.save"),
                 variant: "contained",
                 onClick: () => {},
+                disabled: isSaving,
               },
               {
                 icon: ButtonType.CANCEL,

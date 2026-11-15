@@ -15,10 +15,11 @@ import { Beer, User } from "@/types/generated";
 import { handleErrorWithStatus } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FC } from "react";
-import { FormProvider, SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { z } from "zod";
 
 interface Props {
   beer: Beer;
@@ -26,6 +27,9 @@ interface Props {
   from: string | null;
   isNew: boolean;
 }
+
+type BeerFormInput = z.input<ReturnType<typeof beerSchema>>;
+type BeerFormOutput = z.output<ReturnType<typeof beerSchema>>;
 
 const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
   const { t } = useTranslation();
@@ -35,16 +39,28 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
   const dispatch = useAppDispatch();
 
   const resolver = zodResolver(beerSchema(t));
-  const defaultValues = { ...beer, desiredDate: beer.desiredDate ? beer.desiredDate : undefined };
-  // @ts-ignore
-  const methods = useForm<Beer>({ mode: "onChange", resolver, defaultValues });
+  const defaultValues = {
+    id: beer.id,
+    name: beer.name,
+    style: beer.style,
+    description: beer.description,
+    abv: beer.abv,
+    ibu: beer.ibu,
+    ebc: beer.ebc,
+    recipe: beer.recipe,
+    untapped: beer.untapped,
+    brewedDate: beer.brewedDate,
+    bottleDate: beer.bottleDate,
+    archived: beer.archived,
+    createdDate: beer.createdDate,
+    desiredDate: beer.desiredDate,
+  };
+  const methods = useForm<BeerFormInput, unknown, BeerFormOutput>({ mode: "onChange", resolver, defaultValues });
   const {
     handleSubmit,
     formState: { isDirty },
     setValue,
   } = methods;
-
-  const { desiredDate } = useWatch({ control: methods.control });
 
   const [addBeerRequest, { isLoading: isAdding }] = useAddBeerMutation();
   const addBeer = async (...args: Parameters<typeof addBeerRequest>) => {
@@ -111,21 +127,14 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
     });
   };
 
-  const create = (beerInput: Partial<Beer>) => {
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    const { id, ...rest } = {
-      ...beer,
-      ...beerInput,
-      userId: user.id,
-    };
+  const create = (beerInput: BeerFormOutput) => {
+    const beerPayload = { ...beer, ...beerInput, userId: user.id };
+    const { id: _id, ...rest } = beerPayload;
     addBeer(rest);
   };
 
-  const update = (beerInput: Partial<Beer>) => {
-    updateBeer({
-      ...beer,
-      ...beerInput,
-    });
+  const update = (beerInput: BeerFormOutput) => {
+    updateBeer({ ...beer, ...beerInput });
   };
 
   const updateBeerStyles = async (style: string, styles: string[]) => {
@@ -147,11 +156,8 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
     return styles;
   };
 
-  const onSubmit: SubmitHandler<Partial<Beer>> = (beerToSave) => {
-    const data = {
-      ...beerToSave,
-      desiredDate,
-    };
+  const onSubmit: SubmitHandler<BeerFormOutput> = (beerToSave) => {
+    const data = { ...beerToSave };
 
     const style = beerToSave.style ?? "";
     if (!!style && !beerStyles.includes(style)) {
@@ -166,6 +172,7 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
   };
 
   const callback = (value: string) => updateBeerStyles(value, beerStyles).then(() => setValue("style", value));
+  const isSaving = isAdding || isUpdating;
 
   return (
     <FormProvider {...methods}>
@@ -227,10 +234,10 @@ const BeerForm: FC<Props> = ({ beer, user, from, isNew }) => {
         <ActionKnapper
           buttons={[
             {
-              text: (isAdding ?? isUpdating) ? t("buttons.saving") : t("buttons.save"),
+              text: isSaving ? t("buttons.saving") : t("buttons.save"),
               icon: ButtonType.SUBMIT,
               variant: "contained",
-              disabled: isAdding ?? isUpdating ?? !isDirty,
+              disabled: isSaving || !isDirty,
             },
             {
               text: t("buttons.cancel"),

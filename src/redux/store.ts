@@ -5,7 +5,7 @@ import beerStylesReducer from "@/redux/features/beerStylesSlice";
 import calendarTokenReducer from "@/redux/features/calendarTokenSlice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { persistReducer, persistStore } from "redux-persist";
+import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, persistStore } from "redux-persist";
 import storageSession from "redux-persist/es/storage/session";
 
 const rootReducer = combineReducers({
@@ -20,8 +20,9 @@ export const store = configureStore({
   devTools: import.meta.env.DEV,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
-      immutableCheck: false,
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }).concat(rtkQueryErrorLogger, baseApi.middleware),
 });
 setupListeners(store.dispatch);

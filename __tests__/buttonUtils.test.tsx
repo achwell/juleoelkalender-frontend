@@ -73,6 +73,19 @@ describe("buttonUtils", () => {
     const { container } = render(primaryContainedButton);
     expect(container.firstChild).toMatchSnapshot();
   });
+  it("disables icon buttons on mobile while a request is pending", () => {
+    const button = getIconButton(
+      1,
+      {
+        icon: ButtonType.LOGIN,
+        onClick: () => {},
+        disabled: true,
+      },
+      <MdVisibility title="" />,
+    );
+    const { container } = render(button);
+    expect(container.querySelector("button")?.disabled).toBe(true);
+  });
   it("getIconSubmitButton without onClick", () => {
     const primaryContainedButton = getIconSubmitButton(1, { icon: ButtonType.LOGIN }, <MdVisibility title="" />);
     const { container } = render(primaryContainedButton);

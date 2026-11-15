@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, expect, it } from "vitest";
 import RequireUser from "../src/components/requireUser";
-import authReducer, { setCurrentUser } from "../src/redux/features/authSlice";
+import authReducer, { setCurrentUser, setToken } from "../src/redux/features/authSlice";
 import type { User } from "../src/types/generated";
 
 const user = (allowed: boolean) =>
@@ -43,4 +43,25 @@ it("reacts when the signed-in user's authority is revoked", () => {
     store.dispatch(setCurrentUser(user(false)));
   });
   expect(screen.getByText("Access denied")).toBeTruthy();
+});
+
+it("clears an invalid token and redirects to login", () => {
+  const store = configureStore({ reducer: { authState: authReducer } });
+  store.dispatch(setCurrentUser(user(true)));
+  store.dispatch(setToken("not-a-jwt"));
+  render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route element={<RequireUser requiredAutorities={["beer:read"]} />}>
+            <Route path="/" element={<div>Private page</div>} />
+          </Route>
+          <Route path="/login" element={<div>Sign in</div>} />
+        </Routes>
+      </MemoryRouter>
+    </Provider>,
+  );
+  expect(screen.getByText("Sign in")).toBeTruthy();
+  expect(store.getState().authState.currentUser).toBeNull();
+  expect(store.getState().authState.token).toBeNull();
 });

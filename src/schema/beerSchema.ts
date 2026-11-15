@@ -1,4 +1,3 @@
-import reviewWithoutChildrenSchema from "@/schema/reviewWithoutChildrenSchema";
 import { zBeer } from "@/types/generated/zod.gen";
 import TextFunction from "@/types/TextFunction";
 import { z } from "zod";
@@ -9,6 +8,7 @@ const beerSchema = (t: TextFunction) =>
       bottleDate: true,
       brewedDate: true,
       createdDate: true,
+      brewer: true,
       reviews: true,
       abv: true,
       ibu: true,
@@ -26,18 +26,17 @@ const beerSchema = (t: TextFunction) =>
         .date()
         .min(new Date("1900-01-01"), { error: t("validation.required", { field: t("beer.createdDate") }) }),
       abv: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z.number().positive(t("validation.minvalue", { field: t("beer.abv"), number: 0.1 })),
       ),
       ibu: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z.number().positive(t("validation.minvalue", { field: t("beer.ibu"), number: 0.1 })),
       ),
       ebc: z.preprocess(
-        () => Number,
+        (value) => Number(value),
         z.number().positive(t("validation.minvalue", { field: t("beer.ebc"), number: 0.1 })),
       ),
-      reviews: z.array(reviewWithoutChildrenSchema(t)),
       desiredDate: z.coerce
         .number()
         .int()
